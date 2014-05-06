@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_fragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".NavigationFragment" >
+    		        	
+    	<fragment
+	        android:id="@+id/map_fragment"
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        class="com.google.android.gms.maps.MapFragment" />
+    	
+    	<fragment
+    	    android:id="@+id/directions_fragment"
+    	    android:layout_width="match_parent"
+            android:layout_height="200dp"
+            class="com.gmnav.directions.DirectionsFragment" />
+    	
+    	<com.gmnav.map.MapEventsListener
+    	    android:id="@+id/map_events_listener_view"
+    	    android:layout_width="match_parent"
+	        android:layout_height="match_parent" />
+    
+</FrameLayout>
