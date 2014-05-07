@@ -46,11 +46,11 @@ public class NavigationState {
 		isSnapshot = true;
 	}
 	
-	public NavigationState snapshot() {
+	NavigationState snapshot() {
 		return new NavigationState(this);
 	}
 	
-	public void update(GpsPosition position) throws InvalidObjectException {
+	void update(GpsPosition position) throws InvalidObjectException {
 		if (isSnapshot) {
 			throw new InvalidObjectException("A NavigationState snapshot cannot be updated");
 		} else {

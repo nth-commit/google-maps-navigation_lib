@@ -13,10 +13,13 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridLayout;
+import android.widget.TextView;
 
 public class DirectionFragment extends Fragment {
 	
 	private Direction direction;
+	private GridLayout view;
 	
 	private static List<Direction> directionsById = new ArrayList<Direction>();
 	
@@ -39,26 +42,43 @@ public class DirectionFragment extends Fragment {
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.direction_fragment, container, false);
+		if (view == null) {
+			view = (GridLayout)inflater.inflate(R.layout.direction_fragment, container, false);
+		}
+		
+		TextView directionDescription = null;
+		for (int i = 0; i < view.getChildCount(); i++) {
+			View currentChild = view.getChildAt(i);
+			if (currentChild.getId() == R.id.direction_description_text) {
+				directionDescription = (TextView)currentChild;
+			}
+		}
+		directionDescription.setText(direction.text);
 		return view;
 	}
 	
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
-		super.onActivityCreated(savedInstanceState);
+	public void setDirectionDescription(String text) {
+		if (view != null) {
+			TextView directionDescription = (TextView)getChild(R.id.direction_description_text);
+			directionDescription.setText(text);
+		}
 	}
 	
-	@Override
-	public void onStart() {
-		// TODO Auto-generated method stub
-		super.onStart();
+	public void setDirectionDistance(double distanceMeters) {
+		if (view != null) {
+			TextView directionDistance = (TextView)getChild(R.id.distance_to_direction);
+			String distance = String.format("%sm", (int)distanceMeters);
+			directionDistance.setText(distance);
+		}
 	}
 	
-	@Override
-	public void onResume() {
-		// TODO Auto-generated method stub
-		super.onResume();
+	private View getChild(int id) {
+		for (int i = 0; i < view.getChildCount(); i++) {
+			View currentChild = view.getChildAt(i);
+			if (currentChild.getId() == id) {
+				return currentChild;
+			}
+		}
+		return null;
 	}
-
 }

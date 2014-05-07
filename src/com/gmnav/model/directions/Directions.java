@@ -77,6 +77,8 @@ public class Directions {
 	private Point createLastPoint() {
 		return new Point() {{
 			location = destination;
+			distanceToNextPoint = 0;
+			timeToNextPoint = 0;
 			distanceToCurrentDirectionMeters = 0;
 			timeToCurrentDirectionMinutes = 0;
 			distanceToNextDirectionMeters = 0;
@@ -94,6 +96,7 @@ public class Directions {
 		final boolean isNewDirection = next.direction != dir;
 		return new Point() {{
 			location = loc;
+			distanceToNextPoint = distanceToNext;
 			distanceToCurrentDirectionMeters = isNewDirection ? 0 : next.distanceToCurrentDirectionMeters + distanceToNext;
 			distanceToNextDirectionMeters = isNewDirection ? next.distanceToCurrentDirectionMeters + distanceToNext : next.distanceToNextDirectionMeters + distanceToNext;
 			distanceToArrivalMeters = next.distanceToArrivalMeters + distanceToNext;

@@ -10,17 +10,17 @@
         android:layout_gravity="center"
         android:layout_margin="10dp"
         android:layout_row="0"
+        android:maxWidth="50dp"
+        android:maxHeight="50dp"
         android:contentDescription="@+id/image_view"
-        android:src="@drawable/ic_plusone_medium_off_client" />
+        android:src="@drawable/ic_launcher" />
 
     <TextView
+        android:id="@+id/distance_to_direction"
         android:layout_column="0"
         android:layout_gravity="left"
         android:layout_margin="10dp"
         android:layout_row="1"
-        android:maxLines="2"
-        android:lines="2"
-        android:text="250m"
         android:textColor="#FFFFFFFF"
         android:textSize="32sp"
         android:textStyle="bold" />
@@ -37,13 +37,15 @@
         android:gravity="fill" />
 
     <TextView
+        android:id="@+id/direction_description_text"
         android:layout_height="match_parent"
         android:layout_column="2"
         android:layout_gravity="fill"
         android:layout_margin="10dp"
         android:layout_row="0"
         android:layout_rowSpan="2"
-        android:text="Continue NORTH"
+        android:maxLines="2"
+        android:lines="2"
         android:textAlignment="gravity"
         android:textSize="42sp"
         android:textColor="#FFFFFFFF"

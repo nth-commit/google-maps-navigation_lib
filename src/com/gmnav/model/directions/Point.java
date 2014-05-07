@@ -4,6 +4,8 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class Point {
 	public LatLng location;
+	public double distanceToNextPoint;
+	public double timeToNextPoint;
 	public double distanceToCurrentDirectionMeters;
 	public double timeToCurrentDirectionMinutes;
 	public double distanceToNextDirectionMeters;

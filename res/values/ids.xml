@@ -13,4 +13,6 @@
     <item name="direction_text" type="id" />
     <item name="direction_fragment_container" type="id" />
     <item name="directions_overlay_container" type="id" />
+    <item name="direction_description_text" type="id" />
+    <item name="distance_to_direction" type="id" />
 </resources>

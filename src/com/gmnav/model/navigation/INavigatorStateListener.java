@@ -1,12 +1,9 @@
 package com.gmnav.model.navigation;
 
 import com.gmnav.model.directions.Direction;
+import com.gmnav.model.directions.Point;
 
 public interface INavigatorStateListener {
-	
-	public class NavigatorState {
-		
-	}
 	
 	void OnDeparture();
 	
@@ -17,4 +14,6 @@ public interface INavigatorStateListener {
 	void OnNewDirection(Direction direction);
 	
 	void OnNewPathFound();
+	
+	void OnNavigatorTick(NavigationState state);
 }

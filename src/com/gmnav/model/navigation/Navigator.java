@@ -83,7 +83,7 @@ public class Navigator {
 			}
 			
 			navigatorStateListener.OnDeparture();
-			navigatorStateListener.OnNewDirection(directions.getDirectionsList().get(0));
+			navigatorStateListener.OnNewDirection(directions.getDirectionsList().get(1));
 		}
 	}
 	
@@ -100,6 +100,7 @@ public class Navigator {
 			checkOffPath();
 			updateVehicleMarker();
 			lastNavigationState = navigationState.snapshot();
+			navigatorStateListener.OnNavigatorTick(navigationState);
 		} else {
 			idlePosition = position;
 		}
