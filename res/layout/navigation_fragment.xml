@@ -13,13 +13,12 @@
 	        android:layout_height="match_parent"
 	        class="com.google.android.gms.maps.MapFragment" />
     	
-    	<fragment
-    	    android:id="@+id/directions_fragment"
+    	<LinearLayout
+    	    android:id="@+id/directions_overlay_container"
     	    android:layout_width="match_parent"
-    	    android:layout_height="match_parent"
-            class="com.gmnav.directions.DirectionsFragment" />
-	    	
-    	<com.gmnav.map.MapEventsListener
+    		android:layout_height="match_parent" />
+    	
+    	<com.gmnav.model.map.MapEventsListener
     	    android:id="@+id/map_events_listener_view"
     	    android:layout_width="match_parent"
 	        android:layout_height="match_parent" />

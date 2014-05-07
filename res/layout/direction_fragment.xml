@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:columnCount="3" >
+
+    <ImageView
+        android:id="@+id/image_view"
+        android:layout_column="0"
+        android:layout_gravity="center"
+        android:layout_margin="10dp"
+        android:layout_row="0"
+        android:contentDescription="@+id/image_view"
+        android:src="@drawable/ic_plusone_medium_off_client" />
+
+    <TextView
+        android:layout_column="0"
+        android:layout_gravity="left"
+        android:layout_margin="10dp"
+        android:layout_row="1"
+        android:maxLines="2"
+        android:lines="2"
+        android:text="250m"
+        android:textColor="#FFFFFFFF"
+        android:textSize="32sp"
+        android:textStyle="bold" />
+
+    <View
+        android:layout_width="2dp"
+        android:layout_height="match_parent"
+        android:layout_column="1"
+        android:layout_marginBottom="4dp"
+        android:layout_marginTop="4dp"
+        android:layout_row="0"
+        android:layout_rowSpan="2"
+        android:background="#FFFFFFFF"
+        android:gravity="fill" />
+
+    <TextView
+        android:layout_height="match_parent"
+        android:layout_column="2"
+        android:layout_gravity="fill"
+        android:layout_margin="10dp"
+        android:layout_row="0"
+        android:layout_rowSpan="2"
+        android:text="Continue NORTH"
+        android:textAlignment="gravity"
+        android:textSize="42sp"
+        android:textColor="#FFFFFFFF"
+        android:textStyle="bold" />
+    
+</GridLayout>

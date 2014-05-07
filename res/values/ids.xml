@@ -11,4 +11,6 @@
     
     <item name="direction_image" type="id" />
     <item name="direction_text" type="id" />
+    <item name="direction_fragment_container" type="id" />
+    <item name="directions_overlay_container" type="id" />
 </resources>

@@ -213,12 +213,14 @@ containing a value of this type.
     public static final class id {
         public static int demo_navigation_fragment=0x7f05000c;
         public static int demo_navigation_fragment_container=0x7f05000b;
+        public static int direction_fragment_container=0x7f05000f;
         public static int direction_image=0x7f05000d;
         public static int direction_text=0x7f05000e;
         public static int directions_fragment=0x7f050007;
+        public static int directions_overlay_container=0x7f050010;
         public static int fragment_layout=0x7f050005;
         public static int hybrid=0x7f050004;
-        public static int image_view=0x7f05000f;
+        public static int image_view=0x7f050011;
         public static int map_events_listener_view=0x7f050009;
         public static int map_fragment=0x7f050006;
         public static int navigation_activity_navigation_fragment=0x7f05000a;
@@ -232,8 +234,9 @@ containing a value of this type.
         public static int google_play_services_version=0x7f070000;
     }
     public static final class layout {
-        public static int directions_fragment=0x7f030000;
-        public static int navigation_fragment=0x7f030001;
+        public static int direction_fragment=0x7f030000;
+        public static int directions_overlay_fragment=0x7f030001;
+        public static int navigation_fragment=0x7f030002;
     }
     public static final class string {
         public static int app_name=0x7f06001b;
