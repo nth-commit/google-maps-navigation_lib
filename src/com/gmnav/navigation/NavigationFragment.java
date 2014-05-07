@@ -1,5 +1,8 @@
 package com.gmnav.navigation;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.gmnav.Defaults;
 import com.gmnav.R;
 import com.gmnav.directions.Direction;
@@ -14,7 +17,6 @@ import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallback
 import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.model.LatLng;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -40,14 +42,25 @@ public class NavigationFragment extends Fragment implements
 	private Navigator navigator;
 	private NavigatorEvents internalEvents;
 	
-	public NavigationFragment(NavigationEvents events, NavigationOptions options) {
-		this.events = events;
-		this.options = options;
+	private static List<NavigationEvents> eventsById = new ArrayList<NavigationEvents>();
+	private static List<NavigationOptions> optionsById = new ArrayList<NavigationOptions>();
+	
+	public static final NavigationFragment newInstance(NavigationEvents events, NavigationOptions options) {
+		NavigationFragment fragment = new NavigationFragment();
+		int id = eventsById.size();
+		eventsById.add(id, events);
+		optionsById.add(id, options);
+		Bundle args = new Bundle();
+		args.putInt("index", id);
+		fragment.setArguments(args);
+		return fragment;
 	}
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
+		int id = getArguments().getInt("index");
+		events = eventsById.get(id);
+		options = optionsById.get(id);
 		super.onCreate(savedInstanceState);
 	}
 	

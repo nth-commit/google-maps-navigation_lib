@@ -8,4 +8,7 @@
     <item name="navigation_activity_navigation_fragment" type="id" />
     <item name="demo_navigation_fragment_container" type="id" />
     <item name="demo_navigation_fragment" type="id" />
+    
+    <item name="direction_image" type="id" />
+    <item name="direction_text" type="id" />
 </resources>

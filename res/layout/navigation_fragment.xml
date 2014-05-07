@@ -16,9 +16,9 @@
     	<fragment
     	    android:id="@+id/directions_fragment"
     	    android:layout_width="match_parent"
-            android:layout_height="200dp"
+    	    android:layout_height="match_parent"
             class="com.gmnav.directions.DirectionsFragment" />
-    	
+	    	
     	<com.gmnav.map.MapEventsListener
     	    android:id="@+id/map_events_listener_view"
     	    android:layout_width="match_parent"
