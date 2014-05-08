@@ -21,17 +21,16 @@ public class Vehicle {
 	
 	private static final int TARGET_FRAMES_PER_S = 20;
 	private static final int MS_PER_FRAME = 1000 / TARGET_FRAMES_PER_S;
-	private static final int GPS_DELAY_MS = 500;
+	private static final int GPS_DELAY_MS = 2000;
 	
-	private LatLng location;
 	private Bitmap image;
 	private PointD anchor;
 	private Marker marker;
 	private NavigationMap map;
 	
 	private List<Position> targetPositions;
-	private LatLng currentLocation;
-	private double currentBearing;
+	private LatLng location;
+	private double bearing;
 	
 	private Object targetPositionsLock = new Object();
 		
@@ -50,13 +49,12 @@ public class Vehicle {
 			@Override
 			protected Void doInBackground(Void... arg0) {
 				while (true) {
-					calculateCurrentLocation();
-					calculateCurrentBearing();
+					calculateLocation();
+					calculateBearing();
 					publishProgress();					
 					try {
 						Thread.sleep(MS_PER_FRAME);
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -64,9 +62,9 @@ public class Vehicle {
 			
 			@Override
 			protected void onProgressUpdate(Void... values) {
-				map.setVehiclePosition(currentLocation, currentBearing);
-				marker.setRotation((float)currentBearing);
-				marker.setPosition(currentLocation);
+				map.setVehiclePosition(location, bearing);
+				marker.setRotation((float)bearing);
+				marker.setPosition(location);
 			}
 			
 		};
@@ -79,7 +77,7 @@ public class Vehicle {
 		}
 	}
 	
-	private void calculateCurrentLocation() {
+	private void calculateLocation() {
 		Position a = null;
 		Position b = null;
 		final long currentDelayedTime = System.currentTimeMillis() - GPS_DELAY_MS;
@@ -92,7 +90,8 @@ public class Vehicle {
 						nextPosition = targetPositions.get(index + 1);
 					}
 					return currentPosition.timestamp > currentDelayedTime ||
-						nextPosition != null && nextPosition.timestamp > currentDelayedTime;
+						nextPosition == null ||
+						nextPosition.timestamp > currentDelayedTime;
 				}
 			});
 			
@@ -104,28 +103,26 @@ public class Vehicle {
 			}
 		}
 		
-		if (a == null) {
-			currentLocation = location;
-		} else if (b == null) {
-			currentLocation = a.location;
-		} else {
-			double deltaDist = LatLngUtil.distanceInMeters(a.location, b.location);
-			double deltaTime = b.timestamp - a.timestamp;
-			double timeFromA = currentDelayedTime - a.timestamp;
-			double interpolationFactor = MathUtil.clamp(timeFromA / deltaTime, 0, 1);
-			double distFromA = deltaDist * interpolationFactor;
-			currentLocation = LatLngUtil.travel(a.location, a.bearing, distFromA);
+		if (a != null) {
+			if (b == null) {
+				location = a.location;
+			} else {
+				double deltaDist = LatLngUtil.distanceInMeters(a.location, b.location);
+				double deltaTime = b.timestamp - a.timestamp;
+				double timeFromA = currentDelayedTime - a.timestamp;
+				double interpolationFactor = MathUtil.clamp(timeFromA / deltaTime, 0, 1);
+				double distFromA = deltaDist * interpolationFactor;
+				location = LatLngUtil.travel(a.location, a.bearing, distFromA);
+			}
 		}
 	}
 	
-	private void calculateCurrentBearing() {
-		Position a = null;
+	private void calculateBearing() {
 		synchronized (targetPositions) {
 			if (targetPositions.size() > 0) {
-				a = targetPositions.get(0);
+				bearing = targetPositions.get(0).bearing;
 			}
 		}
-		currentBearing = a == null ? 0 : a.bearing;
 	}
 	
 	public LatLng getLocation() {
