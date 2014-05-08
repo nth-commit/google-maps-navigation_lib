@@ -97,7 +97,7 @@ public class NavigationMap {
 	public Marker addVehicleMarker(Vehicle vehicle) {
 		removeVehicleMarker();
 		vehicleMarker = map.addMarker(new MarkerOptions()
-				.position(vehicle.getPosition().location)
+				.position(vehicle.getLocation())
 				.icon(BitmapDescriptorFactory.fromBitmap(vehicle.getImage()))
 				.flat(true)
 				.anchor(0.5f, 0.5f));
@@ -149,9 +149,9 @@ public class NavigationMap {
 		return new Point(mapView.getMeasuredWidth(), mapView.getMeasuredHeight());
 	}
 	
-	public void setVehiclePosition(Position position) {
-		vehicleBearing = (float)position.bearing;
-		vehicleLocation = getOffsetLocation(position.location);
+	public void setVehiclePosition(LatLng location, double bearing) {
+		vehicleBearing = (float)bearing;
+		vehicleLocation = getOffsetLocation(location);
 		if (trackLocation) {
 			map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPositionFactory.newCameraPosition(vehicleLocation, vehicleBearing)));
 		}

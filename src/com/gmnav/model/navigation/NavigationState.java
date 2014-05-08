@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.gmnav.model.directions.Directions;
 import com.gmnav.model.directions.Point;
-import com.gmnav.model.positioning.GpsPosition;
+import com.gmnav.model.positioning.Position;
 import com.gmnav.model.util.LatLngUtil;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -15,7 +15,7 @@ public class NavigationState {
 	private final int LOOK_BEHIND_POINTS = 2;
 	
 	private List<Point> path;
-	private GpsPosition position;
+	private Position position;
 	private LatLng locationOnPath;
 	private double bearingOnPath;
 	private double distanceOffPath;
@@ -50,7 +50,7 @@ public class NavigationState {
 		return new NavigationState(this);
 	}
 	
-	void update(GpsPosition position) throws InvalidObjectException {
+	void update(Position position) throws InvalidObjectException {
 		if (isSnapshot) {
 			throw new InvalidObjectException("A NavigationState snapshot cannot be updated");
 		} else {
@@ -64,7 +64,7 @@ public class NavigationState {
 		return currentPoint;
 	}
 	
-	public GpsPosition getPosition() {
+	public Position getPosition() {
 		return position;
 	}
 	
@@ -76,7 +76,7 @@ public class NavigationState {
 		return position.bearing;
 	}
 	
-	public double getTime() {
+	public long getTime() {
 		return position.timestamp;
 	}
 	

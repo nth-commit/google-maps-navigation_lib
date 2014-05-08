@@ -3,6 +3,8 @@ package com.gmnav.model.positioning;
 import java.util.List;
 
 import android.os.AsyncTask;
+
+import com.gmnav.model.util.AsyncTaskExecutor;
 import com.google.android.gms.maps.model.LatLng;
 
 public class SimulatedGps extends AbstractSimulatedGps {
@@ -13,10 +15,9 @@ public class SimulatedGps extends AbstractSimulatedGps {
 
 	public void followPath(final List<LatLng> path) {
 		AsyncTask<Void, Void, Void> tickLoopTask = new AsyncTask<Void, Void, Void>() {
-
 			@Override
 			protected Void doInBackground(Void... params) {
-				currentPosition = new GpsPosition(currentPosition.location, 0, System.currentTimeMillis());
+				currentPosition = new Position(currentPosition.location, 0, System.currentTimeMillis());
 				publishProgress();
 				while (path.size() > 0) {
 					advancePosition(path);
@@ -35,6 +36,6 @@ public class SimulatedGps extends AbstractSimulatedGps {
 				onTickHandler.invoke(currentPosition);
 			}
 		};
-		tickLoopTask.execute();
+		AsyncTaskExecutor.execute(tickLoopTask);
 	}
 }

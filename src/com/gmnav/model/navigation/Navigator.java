@@ -10,7 +10,6 @@ import com.gmnav.model.directions.Route.DirectionsRetrieved;
 import com.gmnav.model.map.NavigationMap;
 import com.gmnav.model.map.NavigationMap.MapMode;
 import com.gmnav.model.positioning.AbstractSimulatedGps;
-import com.gmnav.model.positioning.GpsPosition;
 import com.gmnav.model.positioning.IGps;
 import com.gmnav.model.positioning.Position;
 import com.gmnav.model.positioning.IGps.OnTickHandler;
@@ -37,15 +36,14 @@ public class Navigator {
 	public Navigator(final IGps gps, NavigationMap map, VehicleOptions vehicleMarkerOptions) {
 		this.gps = gps;
 		this.map = map;
-		this.vehicle = new Vehicle(map,
-				vehicleMarkerOptions.position(new Position(gps.getLastLocation(), 0)));
+		this.vehicle = new Vehicle(map, vehicleMarkerOptions.location(gps.getLastLocation()));
 		listenToGps();
 	}
 	
 	private void listenToGps() {
 		gps.onTick(new OnTickHandler() {
 			@Override
-			public void invoke(GpsPosition position) {
+			public void invoke(Position position) {
 				onGpsTick(position);
 			}
 		});
@@ -87,7 +85,7 @@ public class Navigator {
 		}
 	}
 	
-	private void onGpsTick(GpsPosition position) {
+	private void onGpsTick(Position position) {
 		if (isNavigating()) {
 			try {
 				navigationState.update(position);
@@ -141,9 +139,10 @@ public class Navigator {
 	}
 	
 	private void updateVehicleMarker() {
+		long timestamp = navigationState.getTime();
 		vehicle.setPosition(navigationState.isOnPath() ?
-				new Position(navigationState.getLocationOnPath(), navigationState.getBearingOnPath()) :
-				new Position(navigationState.getLocation(), navigationState.getBearing()));
+				new Position(navigationState.getLocationOnPath(), navigationState.getBearingOnPath(), timestamp) :
+				new Position(navigationState.getLocation(), navigationState.getBearing(), timestamp));
 	}
 	
 	private void endNavigation() {

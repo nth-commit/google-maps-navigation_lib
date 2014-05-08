@@ -5,7 +5,7 @@ import com.google.android.gms.maps.model.LatLng;
 public interface IGps {
 	
 	public interface OnTickHandler {
-		void invoke(GpsPosition position);
+		void invoke(Position position);
 	}
 	
 	void enableTracking();

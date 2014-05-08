@@ -5,19 +5,20 @@ import android.graphics.Bitmap;
 import com.gmnav.Defaults;
 import com.gmnav.model.positioning.Position;
 import com.gmnav.model.util.PointD;
+import com.google.android.gms.maps.model.LatLng;
 
 public class VehicleOptions {
-	private Position position = new Position(Defaults.LOCATION, 0);
+	private LatLng location = Defaults.LOCATION;
 	private Bitmap image;
 	private PointD anchor = new PointD(0.5d, 0.8d);
 	
-	public VehicleOptions position(Position position) {
-		this.position = position;
+	public VehicleOptions location(LatLng location) {
+		this.location = location;
 		return this;
 	}
 	
-	public Position position() {
-		return position;
+	public LatLng location() {
+		return location;
 	}
 	
 	public VehicleOptions image(Bitmap image) {

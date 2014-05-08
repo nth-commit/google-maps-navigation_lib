@@ -7,9 +7,9 @@ import com.google.android.gms.maps.model.LatLng;
 
 public abstract class AbstractSimulatedGps extends AbstractGps {
 	
-	protected GpsPosition currentPosition;
+	protected Position currentPosition;
 	
-	protected final int TICK_MS = 500;
+	protected final int TICK_MS = 1000;
 	
 	private final int SPEED_LIMIT_KPH = 50;
 	private final double KPH_TO_MPS = 0.277778;
@@ -17,7 +17,7 @@ public abstract class AbstractSimulatedGps extends AbstractGps {
 	private final double S_TO_MS = 1000;
 	
 	public AbstractSimulatedGps(LatLng location) {
-		currentPosition = new GpsPosition(location, 0, System.currentTimeMillis());
+		currentPosition = new Position(location, 0, System.currentTimeMillis());
 	}
 	
 	public abstract void followPath(final List<LatLng> path);
@@ -61,7 +61,7 @@ public abstract class AbstractSimulatedGps extends AbstractGps {
 			}
 		}
 		
-		currentPosition = new GpsPosition(currentLocation, currentBearing, newTime);
+		currentPosition = new Position(currentLocation, currentBearing, newTime);
 	}
 
 }

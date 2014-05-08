@@ -12,7 +12,7 @@ public class DebugSimulatedGps extends AbstractSimulatedGps {
 
 	@Override
 	public void followPath(List<LatLng> path) {
-		currentPosition = new GpsPosition(currentPosition.location, 0, System.currentTimeMillis());
+		currentPosition = new Position(currentPosition.location, 0, System.currentTimeMillis());
 		onTickHandler.invoke(currentPosition);		
 		while (path.size() > 0) {
 			advancePosition(path);
