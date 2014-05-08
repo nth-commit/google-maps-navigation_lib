@@ -14,6 +14,8 @@ import com.gmnav.model.positioning.IGps;
 import com.gmnav.model.positioning.Position;
 import com.gmnav.model.positioning.IGps.OnTickHandler;
 import com.gmnav.model.util.LatLngUtil;
+import com.gmnav.model.vehicle.Vehicle;
+import com.gmnav.model.vehicle.VehicleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import android.util.Log;
 
@@ -74,7 +76,7 @@ public class Navigator {
 		if (!isNavigating()) {
 			navigationState = new NavigationState(directions);
 			map.addPathPolyline(directions.getLatLngPath());
-			map.setMapMode(MapMode.NAVIGATING);
+			map.setMapMode(MapMode.FOLLOW);
 			
 			if (gps instanceof AbstractSimulatedGps) {
 				((AbstractSimulatedGps)gps).followPath(directions.getLatLngPath());
@@ -149,7 +151,7 @@ public class Navigator {
 		destination = null;
 		navigationState = null;
 		lastNavigationState = null;
-		map.setMapMode(MapMode.IDLE);
+		map.setMapMode(MapMode.FREE);
 		map.removePolylinePath();
 	}
 }

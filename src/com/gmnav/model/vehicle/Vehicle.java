@@ -1,4 +1,4 @@
-package com.gmnav.model.navigation;
+package com.gmnav.model.vehicle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +7,8 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 
 import com.gmnav.model.map.NavigationMap;
+import com.gmnav.model.map.NavigationMap.MapMode;
+import com.gmnav.model.map.NavigationMap.OnMapModeChangedListener;
 import com.gmnav.model.positioning.Position;
 import com.gmnav.model.util.AsyncTaskExecutor;
 import com.gmnav.model.util.LatLngUtil;
@@ -25,12 +27,14 @@ public class Vehicle {
 	
 	private Bitmap image;
 	private PointD anchor;
-	private Marker marker;
 	private NavigationMap map;
 	
 	private List<Position> targetPositions;
 	private LatLng location;
 	private double bearing;
+	
+	private LatLngVehicleMarker latLngMarker;
+	private OverlayVehicleMarker overlayMarker;
 	
 	private Object targetPositionsLock = new Object();
 		
@@ -39,8 +43,13 @@ public class Vehicle {
 		location = options.location();
 		image = options.image();
 		anchor = options.anchor();
-		marker = map.addVehicleMarker(this);
 		targetPositions = new ArrayList<Position>();
+		
+		latLngMarker = new LatLngVehicleMarker(this, map);
+		overlayMarker = new OverlayVehicleMarker(this, map);
+		listenForMapModeChange();
+		onMapModeChanged(map.getMapMode());
+		
 		startUpdateTask();
 	}
 	
@@ -63,12 +72,31 @@ public class Vehicle {
 			@Override
 			protected void onProgressUpdate(Void... values) {
 				map.setVehiclePosition(location, bearing);
-				marker.setRotation((float)bearing);
-				marker.setPosition(location);
+				latLngMarker.setBearing(bearing);
+				latLngMarker.setLocation(location);
 			}
 			
 		};
 		AsyncTaskExecutor.execute(vehicleUpdateTask);
+	}
+	
+	private void listenForMapModeChange() {
+		map.setOnMapModeChangedListener(new OnMapModeChangedListener() {
+			@Override
+			public void invoke(MapMode mode) {
+				onMapModeChanged(mode);			
+			}
+		});
+	}
+	
+	private void onMapModeChanged(MapMode mode) {
+		if (mode == MapMode.FOLLOW) {
+			latLngMarker.hide();
+			overlayMarker.show();
+		} else {
+			overlayMarker.hide();
+			latLngMarker.show();
+		}
 	}
 	
 	public void setPosition(Position position) {

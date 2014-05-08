@@ -1,6 +1,7 @@
 package com.gmnav.model.navigation;
 
 import com.gmnav.model.map.NavigationMapOptions;
+import com.gmnav.model.vehicle.VehicleOptions;
 
 public class NavigationOptions {
 	

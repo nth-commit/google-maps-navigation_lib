@@ -2,7 +2,6 @@ package com.gmnav.model.navigation;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 
 import com.gmnav.DirectionFragment;
@@ -33,13 +32,11 @@ public class DefaultNavigatorStateListener implements INavigatorStateListener {
 	@Override
 	public void OnArrival() {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void OnVehicleOffPath() {
-		// TODO Auto-generated method stub
-		
+		// TODO: Do rerouting here (default behaviour), not in Navigator class
 	}
 	
 	@Override

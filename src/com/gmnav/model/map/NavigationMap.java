@@ -6,9 +6,9 @@ import android.graphics.Point;
 import android.view.View;
 
 import com.gmnav.model.map.MapEventsListener.OnTouchEventHandler;
-import com.gmnav.model.navigation.Vehicle;
 import com.gmnav.model.positioning.Position;
 import com.gmnav.model.util.PointD;
+import com.gmnav.model.vehicle.Vehicle;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
@@ -25,9 +25,13 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 public class NavigationMap {
 	
+	public interface OnMapModeChangedListener {
+		void invoke(MapMode mode);
+	}
+	
 	public enum MapMode {
-		NAVIGATING,
-		IDLE
+		FOLLOW,
+		FREE
 	}
 	
 	private static final float NAVIGATING_TILT = 60;
@@ -48,6 +52,8 @@ public class NavigationMap {
 	private Polyline polylinePath;
 	private MapMode mapMode;
 	
+	private OnMapModeChangedListener mapModeChangedListener;
+	
 	private boolean trackLocation = true;
 	
 	public NavigationMap(MapFragment mapFragment, MapEventsListener mapEventsListener, NavigationMapOptions options) {
@@ -60,12 +66,16 @@ public class NavigationMap {
 		mapEventsListener.setOnTouchEventHandler(new OnTouchEventHandler() {
 			@Override
 			public void invoke() {
-				setTrackLocationEnabled(false);		
+				setTrackLocationEnabled(false);
+				if (mapMode != MapMode.FREE) {
+					setMapMode(MapMode.FREE);
+				}
 			}
 		});
 		
 		initialiseUiSettings();
 		initialiseLocationButtonInteractions();
+		setMapMode(MapMode.FREE);
 	}
 	
 	private void initialiseUiSettings() {
@@ -79,7 +89,7 @@ public class NavigationMap {
 		map.setOnMyLocationButtonClickListener(new OnMyLocationButtonClickListener() {
 			@Override
 			public boolean onMyLocationButtonClick() {
-				if (mapMode == MapMode.NAVIGATING) {
+				if (mapMode == MapMode.FOLLOW) {
 					setTrackLocationEnabled(true);
 					setCameraPositionNavigatingDefault();
 					return true;
@@ -93,22 +103,13 @@ public class NavigationMap {
 		trackLocation = enabled;
 		map.setMyLocationEnabled(!enabled);
 	}
-
-	public Marker addVehicleMarker(Vehicle vehicle) {
-		removeVehicleMarker();
-		vehicleMarker = map.addMarker(new MarkerOptions()
-				.position(vehicle.getLocation())
-				.icon(BitmapDescriptorFactory.fromBitmap(vehicle.getImage()))
-				.flat(true)
-				.anchor(0.5f, 0.5f));
-		anchor = vehicle.getAnchor();
-		return vehicleMarker;
+	
+	public GoogleMap getInnerMap() {
+		return map;
 	}
 	
-	public void removeVehicleMarker() {
-		if (vehicleMarker != null) {
-			vehicleMarker.remove();
-		}
+	public void setOnMapModeChangedListener(OnMapModeChangedListener listener){
+		mapModeChangedListener = listener;
 	}
 	
 	public Polyline addPathPolyline(List<LatLng> path) {
@@ -123,14 +124,21 @@ public class NavigationMap {
 		}
 	}
 	
+	public MapMode getMapMode() {
+		return mapMode;
+	}
+	
 	public void setMapMode(MapMode mode) {
 		mapMode = mode;
-		boolean isNavigating = mode == MapMode.NAVIGATING;
-		mapUiSettings.setTiltGesturesEnabled(isNavigating);
-		if (isNavigating) {
+		boolean isFollowing = mode == MapMode.FOLLOW;
+		if (isFollowing) {
 			setCameraPositionNavigatingDefault();
 		} else {
 			setCameraPositionIdleDefault();
+		}
+		
+		if (mapModeChangedListener != null) {
+			mapModeChangedListener.invoke(mode);
 		}
 	}
 	

@@ -1,4 +1,4 @@
-package com.gmnav.model.navigation;
+package com.gmnav.model.vehicle;
 
 import android.graphics.Bitmap;
 
