@@ -10,7 +10,7 @@ import com.google.android.gms.maps.model.LatLng;
 public class VehicleOptions {
 	private LatLng location = Defaults.LOCATION;
 	private Bitmap image;
-	private PointD anchor = new PointD(0.5d, 0.8d);
+	private PointD anchor = new PointD(0.5d, 0.5d);
 	
 	public VehicleOptions location(LatLng location) {
 		this.location = location;

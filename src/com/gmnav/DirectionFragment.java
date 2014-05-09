@@ -7,6 +7,7 @@ import com.gmnav.R;
 import com.gmnav.model.directions.Direction;
 import com.gmnav.model.navigation.NavigationOptions;
 import com.gmnav.model.navigation.Navigator;
+import com.gmnav.model.util.LayoutUtil;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -45,40 +46,22 @@ public class DirectionFragment extends Fragment {
 		if (view == null) {
 			view = (GridLayout)inflater.inflate(R.layout.direction_fragment, container, false);
 		}
-		
-		TextView directionDescription = null;
-		for (int i = 0; i < view.getChildCount(); i++) {
-			View currentChild = view.getChildAt(i);
-			if (currentChild.getId() == R.id.direction_description_text) {
-				directionDescription = (TextView)currentChild;
-			}
-		}
-		directionDescription.setText(direction.text);
+		setDirectionDescription(direction.text);
 		return view;
 	}
 	
 	public void setDirectionDescription(String text) {
 		if (view != null) {
-			TextView directionDescription = (TextView)getChild(R.id.direction_description_text);
+			TextView directionDescription = (TextView)LayoutUtil.getChildViewById(view, R.id.direction_description_text); 
 			directionDescription.setText(text);
 		}
 	}
 	
 	public void setDirectionDistance(double distanceMeters) {
 		if (view != null) {
-			TextView directionDistance = (TextView)getChild(R.id.distance_to_direction);
+			TextView directionDistance = (TextView)LayoutUtil.getChildViewById(view, R.id.distance_to_direction);
 			String distance = String.format("%sm", (int)distanceMeters);
 			directionDistance.setText(distance);
 		}
-	}
-	
-	private View getChild(int id) {
-		for (int i = 0; i < view.getChildCount(); i++) {
-			View currentChild = view.getChildAt(i);
-			if (currentChild.getId() == id) {
-				return currentChild;
-			}
-		}
-		return null;
 	}
 }

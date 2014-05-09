@@ -15,4 +15,7 @@
     <item name="directions_overlay_container" type="id" />
     <item name="direction_description_text" type="id" />
     <item name="distance_to_direction" type="id" />
+    
+    <item name="static_vehicle_marker" type="id" />
+    <item name="static_vehicle_marker_container" type="id" />
 </resources>

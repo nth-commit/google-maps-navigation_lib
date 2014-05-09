@@ -103,7 +103,7 @@ public class NavigationFragment extends Fragment implements
 	@Override
 	public void onConnected(Bundle dataBundle) {
 		gps = createGps();
-		navigator = new Navigator(gps, map, options.vehicleOptions());
+		navigator = new Navigator(this, gps, map, options.vehicleOptions());
 		INavigatorStateListener stateListener = new DefaultNavigatorStateListener(this);
 		navigator.addNavigatorStateListener(stateListener);
 		onNavigatorReady.invoke(navigator);				

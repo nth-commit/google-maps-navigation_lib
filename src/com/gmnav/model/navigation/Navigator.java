@@ -2,6 +2,7 @@ package com.gmnav.model.navigation;
 
 import java.io.InvalidObjectException;
 
+import com.gmnav.NavigationFragment;
 import com.gmnav.model.directions.Direction;
 import com.gmnav.model.directions.Directions;
 import com.gmnav.model.directions.Point;
@@ -35,10 +36,10 @@ public class Navigator {
 	private NavigationState lastNavigationState;
 	private LatLng destination;
 	
-	public Navigator(final IGps gps, NavigationMap map, VehicleOptions vehicleMarkerOptions) {
+	public Navigator(NavigationFragment navigationFragment, final IGps gps, NavigationMap map, VehicleOptions vehicleMarkerOptions) {
 		this.gps = gps;
 		this.map = map;
-		this.vehicle = new Vehicle(map, vehicleMarkerOptions.location(gps.getLastLocation()));
+		this.vehicle = new Vehicle(navigationFragment, map, vehicleMarkerOptions.location(gps.getLastLocation()));
 		listenToGps();
 	}
 	

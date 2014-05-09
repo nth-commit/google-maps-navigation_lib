@@ -222,7 +222,7 @@ containing a value of this type.
         public static int distance_to_direction=0x7f050012;
         public static int fragment_layout=0x7f050005;
         public static int hybrid=0x7f050004;
-        public static int image_view=0x7f050013;
+        public static int image_view=0x7f050015;
         public static int map_events_listener_view=0x7f050009;
         public static int map_fragment=0x7f050006;
         public static int navigation_activity_navigation_fragment=0x7f05000a;
@@ -230,6 +230,8 @@ containing a value of this type.
         public static int none=0x7f050000;
         public static int normal=0x7f050001;
         public static int satellite=0x7f050002;
+        public static int static_vehicle_marker=0x7f050013;
+        public static int static_vehicle_marker_container=0x7f050014;
         public static int terrain=0x7f050003;
     }
     public static final class integer {

@@ -13,6 +13,8 @@ import com.gmnav.model.util.LatLngUtil;
 
 public class DefaultNavigatorStateListener implements INavigatorStateListener {
 	
+	private boolean DEBUG_DISABLE_DIRECTIONS = true;
+	
 	private DirectionsOverlayFragment directionsOverlayFragment;
 	private DirectionFragment currentDirectionFragment;
 	private Activity parentActivity;
@@ -24,9 +26,11 @@ public class DefaultNavigatorStateListener implements INavigatorStateListener {
 
 	@Override
 	public void OnDeparture() {
-		FragmentTransaction ft = parentActivity.getFragmentManager().beginTransaction();
-		ft.add(R.id.directions_overlay_container, directionsOverlayFragment);
-		ft.commit();
+		if (!DEBUG_DISABLE_DIRECTIONS) {
+			FragmentTransaction ft = parentActivity.getFragmentManager().beginTransaction();
+			ft.add(R.id.directions_overlay_container, directionsOverlayFragment);
+			ft.commit();
+		}
 	}
 
 	@Override
@@ -41,13 +45,15 @@ public class DefaultNavigatorStateListener implements INavigatorStateListener {
 	
 	@Override
 	public void OnNewDirection(Direction direction) {
-		FragmentTransaction ft = parentActivity.getFragmentManager().beginTransaction();
-		if (currentDirectionFragment != null) {
-			ft.remove(currentDirectionFragment);
+		if (!DEBUG_DISABLE_DIRECTIONS) {
+			FragmentTransaction ft = parentActivity.getFragmentManager().beginTransaction();
+			if (currentDirectionFragment != null) {
+				ft.remove(currentDirectionFragment);
+			}
+			currentDirectionFragment = DirectionFragment.newInstance(direction);
+			ft.add(R.id.direction_fragment_container, currentDirectionFragment);
+			ft.commit();
 		}
-		currentDirectionFragment = DirectionFragment.newInstance(direction);
-		ft.add(R.id.direction_fragment_container, currentDirectionFragment);
-		ft.commit();
 	}
 	
 	@Override
@@ -57,11 +63,13 @@ public class DefaultNavigatorStateListener implements INavigatorStateListener {
 	}
 	
 	public void OnNavigatorTick(NavigationState state) {
-		Point currentPoint = state.getCurrentPoint();
-		Point nextPoint = currentPoint.nextPoint;
-		double distanceToDirection = LatLngUtil.distanceInMeters(state.getLocationOnPath(), nextPoint.location) +
-				nextPoint.distanceToCurrentDirectionMeters;
-		currentDirectionFragment.setDirectionDistance(distanceToDirection);
+		if (!DEBUG_DISABLE_DIRECTIONS) {
+			Point currentPoint = state.getCurrentPoint();
+			Point nextPoint = currentPoint.nextPoint;
+			double distanceToDirection = LatLngUtil.distanceInMeters(state.getLocationOnPath(), nextPoint.location) +
+					nextPoint.distanceToCurrentDirectionMeters;
+			currentDirectionFragment.setDirectionDistance(distanceToDirection);
+		}
 	}
 
 }

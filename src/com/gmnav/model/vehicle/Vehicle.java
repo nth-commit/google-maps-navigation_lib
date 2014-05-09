@@ -6,6 +6,7 @@ import java.util.List;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 
+import com.gmnav.NavigationFragment;
 import com.gmnav.model.map.NavigationMap;
 import com.gmnav.model.map.NavigationMap.MapMode;
 import com.gmnav.model.map.NavigationMap.OnMapModeChangedListener;
@@ -34,11 +35,11 @@ public class Vehicle {
 	private double bearing;
 	
 	private LatLngVehicleMarker latLngMarker;
-	private OverlayVehicleMarker overlayMarker;
+	private StaticVehicleMarker overlayMarker;
 	
 	private Object targetPositionsLock = new Object();
 		
-	public Vehicle(NavigationMap map, VehicleOptions options) {
+	public Vehicle(NavigationFragment navigationFragment, NavigationMap map, VehicleOptions options) {
 		this.map = map;
 		location = options.location();
 		image = options.image();
@@ -46,7 +47,7 @@ public class Vehicle {
 		targetPositions = new ArrayList<Position>();
 		
 		latLngMarker = new LatLngVehicleMarker(this, map);
-		overlayMarker = new OverlayVehicleMarker(this, map);
+		overlayMarker = new StaticVehicleMarker(navigationFragment, this, map);
 		listenForMapModeChange();
 		onMapModeChanged(map.getMapMode());
 		
