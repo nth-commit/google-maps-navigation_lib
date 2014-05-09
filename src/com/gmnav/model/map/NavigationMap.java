@@ -34,7 +34,7 @@ public class NavigationMap {
 		FREE
 	}
 	
-	private static final float NAVIGATING_TILT = 0;
+	private static final float NAVIGATING_TILT = 60;
 	private static final float NAVIGATING_ZOOM = 19;
 	private static final float IDLE_TILT = 0;
 	private static final float IDLE_BEARING = 0;

@@ -24,50 +24,68 @@ import com.google.android.gms.maps.model.CameraPosition;
 public class StaticVehicleMarker implements IVehicleMarker {
 	
 	private Vehicle vehicle;
-	
-	private ImageView markerImage;
+	private NavigationMap map;
+	private ImageView markerImageView;
+	private Bitmap image;
+	private boolean isVisible;
+	private float currentTilt = -1.0f;
 	
 	public StaticVehicleMarker(NavigationFragment navigationFragment, Vehicle vehicle, NavigationMap map) {
 		this.vehicle = vehicle;
+		this.map = map;
+
+		ViewGroup view = (ViewGroup)navigationFragment.getView();
+		LinearLayout container = (LinearLayout)LayoutUtil.getChildViewById(view, R.id.static_vehicle_marker_container);
+		markerImageView = (ImageView)LayoutUtil.getChildViewById(container, R.id.static_vehicle_marker);
+		image = vehicle.getImage();
+		isVisible = markerImageView.getVisibility() == View.VISIBLE;
+		
 		map.getInnerMap().setOnCameraChangeListener(new OnCameraChangeListener() {
 			@Override
 			public void onCameraChange(CameraPosition position) {
-				setTilt(position.tilt);
+				setLayoutParams(position);
 			}
 		});
-		
-		ViewGroup view = (ViewGroup)navigationFragment.getView();
-		LinearLayout container = (LinearLayout)LayoutUtil.getChildViewById(view, R.id.static_vehicle_marker_container);
-		markerImage = (ImageView)LayoutUtil.getChildViewById(container, R.id.static_vehicle_marker);
-		int viewWidth = view.getWidth();
-		int viewHeight = view.getHeight();
-		
-		Bitmap image = vehicle.getImage();
-		markerImage.setImageBitmap(image);
-		final Point mapSize = map.getSize();
-		final PointD anchor = vehicle.getAnchor();
-		LayoutParams layout = new LayoutParams(image.getWidth(), image.getHeight()) {{
-			leftMargin = (int)((mapSize.x * anchor.x) - width / 2);
-			topMargin = (int)((mapSize.y * anchor.y) - height / 2);
-		}};
-		markerImage.setLayoutParams(layout);
+		updateLayoutParams();
+	}
+	
+	private void updateLayoutParams() {
+		setLayoutParams(map.getInnerMap().getCameraPosition());
 	}
 
 	@Override
 	public void show() {
-		markerImage.setVisibility(View.VISIBLE);
+		if (!isVisible) {
+			isVisible = true;
+			updateLayoutParams();
+			markerImageView.setVisibility(View.VISIBLE);
+		}
 	}
 
 	@Override
 	public void hide() {
-		markerImage.setVisibility(View.INVISIBLE);
+		if (isVisible) {
+			isVisible = false;
+			markerImageView.setVisibility(View.INVISIBLE);
+		}
 	}
-	
-	public Vehicle getVehicle() {
-		return vehicle;
-	}
-	
-	private void setTilt(float tilt) {
-		
+
+	private void setLayoutParams(CameraPosition position) {
+		float tilt = position.tilt;
+		if (isVisible && tilt != currentTilt) {
+			final int imageHeight = (int)(image.getHeight() * Math.cos(Math.toRadians(position.tilt)));
+			final int imageWidth = image.getWidth();
+			final Bitmap flattenedImage = Bitmap.createScaledBitmap(image, imageWidth, imageHeight, true);
+			markerImageView.setImageBitmap(flattenedImage);
+			
+			final Point mapSize = map.getSize();
+			final PointD anchor = vehicle.getAnchor();
+			LayoutParams layout = new LayoutParams(imageWidth, imageHeight) {{
+				leftMargin = (int)((mapSize.x * anchor.x) - width / 2);
+				topMargin = (int)((mapSize.y * anchor.y) - height / 2);
+			}};
+			markerImageView.setLayoutParams(layout);
+			currentTilt = tilt;
+		}
 	}
 }
