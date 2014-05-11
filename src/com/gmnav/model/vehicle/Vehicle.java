@@ -70,7 +70,7 @@ public class Vehicle {
 					calculateBearing(timeDelayed, positions[0], positions[1]);
 					publishProgress();
 					try {
-						Thread.sleep(MS_PER_FRAME);
+						Thread.sleep(MS_PER_FRAME); // TODO: adjust sleep time based on real processing time.
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -110,44 +110,33 @@ public class Vehicle {
 	public void setPosition(Position position) {
 		synchronized (targetPositionsLock) {
 			targetPositions.add(position);
-			// removeOldPositions(); FIX!
-		}
-	}
-	
-	private void removeOldPositions() {
-		synchronized (targetPositionsLock) {
-			final long timeDelayed = System.currentTimeMillis() - GPS_DELAY_MS;
-			int windowStartIndex = ListUtil.lastIndexOf(targetPositions, new Predicate<Position>() {
-				@Override
-				public boolean check(Position item, int index) {
-					return item.timestamp <= timeDelayed;
-				}
-			});
-			
-			ListIterator<Position> iterator = targetPositions.listIterator();
-			while (targetPositions.size() > 2 && iterator.hasNext() && iterator.nextIndex() < windowStartIndex) {
-				iterator.remove();
-			}
-			targetPositions.trimToSize();
 		}
 	}
 	
 	private Position[] getPositionsAroundTime(final long time) {
 		Position[] currentPositions = new Position[2];
 		synchronized (targetPositionsLock) {
-			currentPositions[0] = ListUtil.findLast(targetPositions, new Predicate<Position>() {
+			int startIndex = ListUtil.lastIndexOf(targetPositions, new Predicate<Position>() {
 				@Override
 				public boolean check(Position item, int index) {
 					return item.timestamp <= time;
 				}
 			});
 			
-			currentPositions[1] = ListUtil.find(targetPositions, new Predicate<Position>() {
-				@Override
-				public boolean check(Position item, int index) {
-					return item.timestamp > time;
-				}
-			});	
+			if (targetPositions.size() > startIndex && startIndex > -1) {
+				currentPositions[0] = targetPositions.get(startIndex);
+				currentPositions[1] = ListUtil.find(targetPositions, new Predicate<Position>() {
+					@Override
+					public boolean check(Position item, int index) {
+						return item.timestamp > time;
+					}
+				});
+			}
+			
+			for (int i = 0; i < startIndex && i < targetPositions.size(); i++) {
+				targetPositions.remove(i);
+			}
+			targetPositions.trimToSize();
 		}
 		return currentPositions;
 	}
