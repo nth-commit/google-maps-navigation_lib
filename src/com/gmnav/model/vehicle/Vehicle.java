@@ -1,10 +1,11 @@
 package com.gmnav.model.vehicle;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.ListIterator;
 
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.gmnav.NavigationFragment;
 import com.gmnav.model.map.NavigationMap;
@@ -18,7 +19,6 @@ import com.gmnav.model.util.ListUtil.Predicate;
 import com.gmnav.model.util.MathUtil;
 import com.gmnav.model.util.PointD;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 
 public class Vehicle {
 	
@@ -30,7 +30,7 @@ public class Vehicle {
 	private PointD anchor;
 	private NavigationMap map;
 	
-	private List<Position> targetPositions;
+	private ArrayList<Position> targetPositions;
 	private LatLng location;
 	private double bearing;
 	
@@ -59,9 +59,16 @@ public class Vehicle {
 			@Override
 			protected Void doInBackground(Void... arg0) {
 				while (true) {
-					calculateLocation();
-					calculateBearing();
-					publishProgress();					
+					long timeDelayed;
+					Position[] positions;
+					synchronized (targetPositionsLock) {
+						timeDelayed = System.currentTimeMillis() - GPS_DELAY_MS;
+						positions = getPositionsAroundTime(timeDelayed);
+					}
+					
+					calculateLocation(timeDelayed, positions[0], positions[1]);
+					calculateBearing(timeDelayed, positions[0], positions[1]);
+					publishProgress();
 					try {
 						Thread.sleep(MS_PER_FRAME);
 					} catch (InterruptedException e) {
@@ -103,42 +110,56 @@ public class Vehicle {
 	public void setPosition(Position position) {
 		synchronized (targetPositionsLock) {
 			targetPositions.add(position);
+			// removeOldPositions(); FIX!
 		}
 	}
 	
-	private void calculateLocation() {
-		Position a = null;
-		Position b = null;
-		final long currentDelayedTime = System.currentTimeMillis() - GPS_DELAY_MS;
+	private void removeOldPositions() {
 		synchronized (targetPositionsLock) {
-			targetPositions = ListUtil.removeAll(targetPositions, new Predicate<Position>() {
+			final long timeDelayed = System.currentTimeMillis() - GPS_DELAY_MS;
+			int windowStartIndex = ListUtil.lastIndexOf(targetPositions, new Predicate<Position>() {
 				@Override
-				public boolean check(Position currentPosition, int index) {
-					Position nextPosition = null;
-					if (targetPositions.size() > index + 2) {
-						nextPosition = targetPositions.get(index + 1);
-					}
-					return currentPosition.timestamp > currentDelayedTime ||
-						nextPosition == null ||
-						nextPosition.timestamp > currentDelayedTime;
+				public boolean check(Position item, int index) {
+					return item.timestamp <= timeDelayed;
 				}
 			});
 			
-			if (targetPositions.size() > 0) {
-				a = targetPositions.get(0);
+			ListIterator<Position> iterator = targetPositions.listIterator();
+			while (targetPositions.size() > 2 && iterator.hasNext() && iterator.nextIndex() < windowStartIndex) {
+				iterator.remove();
 			}
-			if (targetPositions.size() > 1) {
-				b = targetPositions.get(1);
-			}
+			targetPositions.trimToSize();
 		}
-		
+	}
+	
+	private Position[] getPositionsAroundTime(final long time) {
+		Position[] currentPositions = new Position[2];
+		synchronized (targetPositionsLock) {
+			currentPositions[0] = ListUtil.findLast(targetPositions, new Predicate<Position>() {
+				@Override
+				public boolean check(Position item, int index) {
+					return item.timestamp <= time;
+				}
+			});
+			
+			currentPositions[1] = ListUtil.find(targetPositions, new Predicate<Position>() {
+				@Override
+				public boolean check(Position item, int index) {
+					return item.timestamp > time;
+				}
+			});	
+		}
+		return currentPositions;
+	}
+	
+	private void calculateLocation(long time, Position a, Position b) {
 		if (a != null) {
 			if (b == null) {
 				location = a.location;
 			} else {
 				double deltaDist = LatLngUtil.distanceInMeters(a.location, b.location);
 				double deltaTime = b.timestamp - a.timestamp;
-				double timeFromA = currentDelayedTime - a.timestamp;
+				double timeFromA = time - a.timestamp;
 				double interpolationFactor = MathUtil.clamp(timeFromA / deltaTime, 0, 1);
 				double distFromA = deltaDist * interpolationFactor;
 				location = LatLngUtil.travel(a.location, a.bearing, distFromA);
@@ -146,11 +167,9 @@ public class Vehicle {
 		}
 	}
 	
-	private void calculateBearing() {
-		synchronized (targetPositions) {
-			if (targetPositions.size() > 0) {
-				bearing = targetPositions.get(0).bearing;
-			}
+	private void calculateBearing(long time, Position a, Position b) {
+		if (a != null) {
+			bearing = a.bearing;
 		}
 	}
 	

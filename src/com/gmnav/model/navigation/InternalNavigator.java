@@ -1,6 +1,8 @@
 package com.gmnav.model.navigation;
 
 import java.io.InvalidObjectException;
+
+import com.gmnav.NavigationFragment;
 import com.gmnav.model.directions.Direction;
 import com.gmnav.model.directions.Directions;
 import com.gmnav.model.directions.Point;
@@ -16,8 +18,6 @@ import com.gmnav.model.util.LatLngUtil;
 import com.gmnav.model.vehicle.Vehicle;
 import com.gmnav.model.vehicle.VehicleOptions;
 import com.google.android.gms.maps.model.LatLng;
-
-import android.app.Fragment;
 import android.util.Log;
 
 public class InternalNavigator {
@@ -36,7 +36,7 @@ public class InternalNavigator {
 	private NavigationState lastNavigationState;
 	private LatLng destination;
 	
-	public InternalNavigator(Fragment navigationFragment, final IGps gps, NavigationMap map, VehicleOptions vehicleMarkerOptions) {
+	public InternalNavigator(NavigationFragment navigationFragment, final IGps gps, NavigationMap map, VehicleOptions vehicleMarkerOptions) {
 		this.gps = gps;
 		this.map = map;
 		this.vehicle = new Vehicle(navigationFragment, map, vehicleMarkerOptions.location(gps.getLastLocation()));

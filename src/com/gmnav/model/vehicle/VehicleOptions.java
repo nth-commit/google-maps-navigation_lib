@@ -3,7 +3,6 @@ package com.gmnav.model.vehicle;
 import android.graphics.Bitmap;
 
 import com.gmnav.Defaults;
-import com.gmnav.model.positioning.Position;
 import com.gmnav.model.util.PointD;
 import com.google.android.gms.maps.model.LatLng;
 

@@ -1,12 +1,7 @@
 package com.gmnav.model.vehicle;
 
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.graphics.Bitmap;
-import android.graphics.Matrix;
 import android.graphics.Point;
-import android.opengl.Visibility;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
