@@ -4,17 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.gmnav.R;
-import com.gmnav.model.directions.Direction;
 import com.gmnav.model.map.MapEventsListener;
 import com.gmnav.model.map.NavigationMap;
 import com.gmnav.model.navigation.DefaultNavigatorStateListener;
 import com.gmnav.model.navigation.INavigatorStateListener;
+import com.gmnav.model.navigation.InternalNavigator;
 import com.gmnav.model.navigation.NavigationOptions;
 import com.gmnav.model.navigation.Navigator;
 import com.gmnav.model.positioning.DebugSimulatedGps;
 import com.gmnav.model.positioning.Gps;
 import com.gmnav.model.positioning.IGps;
 import com.gmnav.model.positioning.SimulatedGps;
+import com.gmnav.model.positioning.GpsOptions.GpsType;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
 import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
@@ -28,34 +29,28 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 
 public class NavigationFragment extends Fragment implements
 	ConnectionCallbacks,
 	OnConnectionFailedListener  {
 	
-	public interface OnNavigatorReady {
-		void invoke(Navigator navigator);
-	}
+	private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 	
-	private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;	
+	private Navigator navigator = new Navigator();
 
 	private NavigationOptions options;
-	private OnNavigatorReady onNavigatorReady;
+	private InternalNavigator internalNavigator;
 	private Activity parent;
 	private LocationClient locationClient;
 	private NavigationMap map;
 	private IGps gps;
-	private Navigator navigator;
 	
 	private static List<NavigationOptions> optionsById = new ArrayList<NavigationOptions>();
-	private static List<OnNavigatorReady> readyEventsById = new ArrayList<OnNavigatorReady>();
 	
-	public static final NavigationFragment newInstance(NavigationOptions options, OnNavigatorReady onNavigatorReady) {
+	public static final NavigationFragment newInstance(NavigationOptions options) {
 		NavigationFragment fragment = new NavigationFragment();
 		int id = optionsById.size();
 		optionsById.add(id, options);
-		readyEventsById.add(id, onNavigatorReady);
 		Bundle args = new Bundle();
 		args.putInt("index", id);
 		fragment.setArguments(args);
@@ -66,7 +61,6 @@ public class NavigationFragment extends Fragment implements
 	public void onCreate(Bundle savedInstanceState) {
 		int id = getArguments().getInt("index");
 		options = optionsById.get(id);
-		onNavigatorReady = readyEventsById.get(id);
 		super.onCreate(savedInstanceState);
 	}
 	
@@ -76,15 +70,20 @@ public class NavigationFragment extends Fragment implements
 	}
 	
 	@Override
-	public void onStart() {
-		parent = getActivity();
-		parent.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+	public void onActivityCreated(Bundle savedInstanceState) {
 		MapFragment mapFragment = (MapFragment)getFragmentManager().findFragmentById(R.id.map_fragment);
 		MapEventsListener mapEventsListener = (MapEventsListener)getView().getRootView().findViewById(R.id.map_events_listener_view);
 		map = new NavigationMap(mapFragment, mapEventsListener, options.mapOptions());
-		locationClient = new LocationClient(parent, this, this);
-		locationClient.connect();
-		super.onStart();
+		
+		if (options.gpsOptions().gpsType() == GpsType.REAL) {
+			locationClient = new LocationClient(parent, this, this);
+			locationClient.connect();
+		} else {
+			createGps();
+			createNavigator();
+		}
+		
+		super.onActivityCreated(savedInstanceState);
 	}
 
 	@Override
@@ -102,24 +101,8 @@ public class NavigationFragment extends Fragment implements
 
 	@Override
 	public void onConnected(Bundle dataBundle) {
-		gps = createGps();
-		navigator = new Navigator(this, gps, map, options.vehicleOptions());
-		INavigatorStateListener stateListener = new DefaultNavigatorStateListener(this);
-		navigator.addNavigatorStateListener(stateListener);
-		onNavigatorReady.invoke(navigator);				
-	}
-	
-	// TODO: Extract to SimulatedNavigationFragment
-	private IGps createGps() {
-		final boolean USE_SIMULATED_GPS = true;
-		final boolean USE_DEBUG_SIMULATED_GPS = true;
-		if (USE_SIMULATED_GPS) {
-			return new SimulatedGps(Defaults.LOCATION);
-		} else if (USE_DEBUG_SIMULATED_GPS) {
-			return new DebugSimulatedGps(Defaults.LOCATION);
-		} else {
-			return new Gps(locationClient);
-		}
+		createGps();
+		createNavigator();			
 	}
 
 	@Override
@@ -129,6 +112,25 @@ public class NavigationFragment extends Fragment implements
 	
 	public Navigator getNavigator() {
 		return navigator;
+	}
+	
+	private void createGps() {
+		if (options.gpsOptions().gpsType() == GpsType.SIMULATED) {
+			if (options.gpsOptions().debugMode()) {
+				gps = new DebugSimulatedGps(Defaults.LOCATION);
+			} else {
+				gps = new SimulatedGps(Defaults.LOCATION);
+			}
+		} else {
+			gps = new Gps(locationClient);
+		}
+	}
+	
+	private void createNavigator() {
+		internalNavigator = new InternalNavigator(this, gps, map, options.vehicleOptions());
+		INavigatorStateListener stateListener = new DefaultNavigatorStateListener(this);
+		internalNavigator.addNavigatorStateListener(stateListener);
+		navigator.setInternalNavigator(internalNavigator);
 	}
 }
 

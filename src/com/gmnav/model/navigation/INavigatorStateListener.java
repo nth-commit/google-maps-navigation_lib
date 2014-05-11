@@ -1,7 +1,6 @@
 package com.gmnav.model.navigation;
 
 import com.gmnav.model.directions.Direction;
-import com.gmnav.model.directions.Point;
 
 public interface INavigatorStateListener {
 	

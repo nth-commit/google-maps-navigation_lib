@@ -5,8 +5,6 @@ import java.util.List;
 
 import com.gmnav.R;
 import com.gmnav.model.directions.Direction;
-import com.gmnav.model.navigation.NavigationOptions;
-import com.gmnav.model.navigation.Navigator;
 import com.gmnav.model.util.LayoutUtil;
 
 import android.app.Fragment;

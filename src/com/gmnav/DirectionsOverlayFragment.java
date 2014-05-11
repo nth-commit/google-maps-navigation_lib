@@ -1,7 +1,5 @@
 package com.gmnav;
 
-import com.gmnav.model.navigation.Navigator;
-
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;

@@ -1,12 +1,14 @@
 package com.gmnav.model.navigation;
 
 import com.gmnav.model.map.NavigationMapOptions;
+import com.gmnav.model.positioning.GpsOptions;
 import com.gmnav.model.vehicle.VehicleOptions;
 
 public class NavigationOptions {
 	
 	private VehicleOptions vehicleOptions = new VehicleOptions();
 	private NavigationMapOptions mapOptions = new NavigationMapOptions();
+	private GpsOptions gpsOptions = new GpsOptions();
 	
 	public NavigationOptions vehicleOptions(VehicleOptions options) {
 		vehicleOptions = options;
@@ -24,5 +26,14 @@ public class NavigationOptions {
 	
 	public NavigationMapOptions mapOptions() {
 		return mapOptions;
+	}
+	
+	public NavigationOptions gpsOptions(GpsOptions options) {
+		gpsOptions = options;
+		return this;
+	}
+	
+	public GpsOptions gpsOptions() {
+		return gpsOptions;
 	}
 }
