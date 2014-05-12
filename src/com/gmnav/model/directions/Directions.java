@@ -30,23 +30,21 @@ public class Directions {
 	
 	private void createDirections(JSONArray steps) throws JSONException {
 		directions = new ArrayList<Direction>();
-		String nextDirectionText = "Depart";
+
 		List<LatLng> nextDirectionPath = new ArrayList<LatLng>();
 		nextDirectionPath.add(origin);
 		int stepsLength = steps.length();
 		for (int i = 0; i < stepsLength; i++) {
 			JSONObject step = steps.getJSONObject(i);
 			nextDirectionPath.add(getLatLng(step.getJSONObject("start_location")));
-			directions.add(new Direction(i, nextDirectionText, nextDirectionPath));
+			String directionText = step.getString("html_instructions");
+			directions.add(new Direction(i, directionText, nextDirectionPath));
 			
-			nextDirectionText = step.getString("html_instructions");
 			nextDirectionPath = GoogleUtil.decodePolyline(step.getJSONObject("polyline").getString("points"));
 			nextDirectionPath.add(getLatLng(step.getJSONObject("end_location")));
 		}
-		directions.add(new Direction(stepsLength, nextDirectionText, nextDirectionPath));
-		ArrayList<LatLng> lastDirectionPath = new ArrayList<LatLng>();
-		lastDirectionPath.add(destination);
-		directions.add(new Direction(stepsLength + 1, "Arrive", lastDirectionPath));
+		nextDirectionPath.add(destination);
+		directions.add(new Direction(stepsLength, "Arrive", nextDirectionPath));
 	}
 	
 	private LatLng getLatLng(JSONObject serializedLatLng) throws JSONException {

@@ -9,6 +9,7 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.gmnav.model.util.AsyncTaskExecutor;
 import com.google.android.gms.maps.model.LatLng;
@@ -51,6 +52,7 @@ public class Route extends AsyncTask<Void, Void, String> {
 			HttpEntity entity = response.getEntity();
 			return EntityUtils.toString(entity);
 		} catch (Exception ex) {
+			Log.e("Failed to retrieve directions", ex.getMessage());
 			ex.printStackTrace();
 		}
 		return null;
