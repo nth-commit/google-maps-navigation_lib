@@ -32,16 +32,29 @@ public class Navigator {
 		}
 	}
 	
-	public void navigateTo(final LatLng location) {
+	public void go(final LatLng location) {
 		if (navigator == null) {
 			callbacks.add(new WhenNavigatorReady() {
 				@Override
 				public void invoke(InternalNavigator navigator) {
-					navigator.navigateTo(location);
+					navigator.go(location);
 				}
 			});
 		} else {
-			navigator.navigateTo(location);
+			navigator.go(location);
+		}
+	}
+	
+	public void stop() {
+		if (navigator == null) {
+			callbacks.add(new WhenNavigatorReady() {
+				@Override
+				public void invoke(InternalNavigator navigator) {
+					navigator.stop();
+				}
+			});
+		} else {
+			navigator.stop();
 		}
 	}
 }

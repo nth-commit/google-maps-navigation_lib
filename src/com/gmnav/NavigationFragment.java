@@ -76,6 +76,7 @@ public class NavigationFragment extends Fragment implements
 		map = new NavigationMap(mapFragment, mapEventsListener, options.mapOptions());
 		
 		if (options.gpsOptions().gpsType() == GpsType.REAL) {
+			parent = getActivity();
 			locationClient = new LocationClient(parent, this, this);
 			locationClient.connect();
 		} else {

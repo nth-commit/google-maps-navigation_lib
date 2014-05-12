@@ -58,8 +58,7 @@ public class InternalNavigator {
 		navigatorStateListener = stateListener;
 	}
 
-	public void navigateTo(final LatLng location) {
-		
+	public void go(final LatLng location) {
 		Route request = new Route(idlePosition.location, location);
 		request.getDirections(new DirectionsRetrieved() {
 			@Override
@@ -68,6 +67,14 @@ public class InternalNavigator {
 				startNavigation(directions);
 			}
 		});
+	}
+	
+	public void stop() {
+		destination = null;
+		navigationState = null;
+		lastNavigationState = null;
+		map.setMapMode(MapMode.FREE);
+		map.removePolylinePath();
 	}
 	
 	public boolean isNavigating() {
@@ -110,7 +117,7 @@ public class InternalNavigator {
 	
 	private void checkArrival() {
 		if (LatLngUtil.distanceInMeters(navigationState.getLocation(), destination) <= MIN_ARRIVAL_DIST_METERS) {
-			endNavigation();
+			stop();
 			navigatorStateListener.OnArrival();
 		}
 	}
@@ -147,13 +154,5 @@ public class InternalNavigator {
 		vehicle.setPosition(navigationState.isOnPath() ?
 				new Position(navigationState.getLocationOnPath(), navigationState.getBearingOnPath(), timestamp) :
 				new Position(navigationState.getLocation(), navigationState.getBearing(), timestamp));
-	}
-	
-	private void endNavigation() {
-		destination = null;
-		navigationState = null;
-		lastNavigationState = null;
-		map.setMapMode(MapMode.FREE);
-		map.removePolylinePath();
 	}
 }
