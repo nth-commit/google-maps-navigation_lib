@@ -104,5 +104,5 @@ public class LatLngUtil {
     	return new LatLng(
     			start.latitude + boundedIF * (end.latitude - start.latitude),
     			start.longitude + boundedIF * (end.longitude - start.longitude));
-    }    
+    }
 }

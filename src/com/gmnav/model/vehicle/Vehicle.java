@@ -1,12 +1,8 @@
 package com.gmnav.model.vehicle;
 
 import java.util.ArrayList;
-import java.util.ListIterator;
-
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
-import android.util.Log;
-
 import com.gmnav.NavigationFragment;
 import com.gmnav.model.map.NavigationMap;
 import com.gmnav.model.map.NavigationMap.MapMode;

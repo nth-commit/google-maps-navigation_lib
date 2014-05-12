@@ -31,7 +31,7 @@ public class InternalNavigator {
 	private Vehicle vehicle;
 	private IGps gps;
 	private INavigatorStateListener navigatorStateListener;
-	private Position idlePosition;
+	private Position position;
 	private NavigationState navigationState;
 	private NavigationState lastNavigationState;
 	private LatLng destination;
@@ -59,7 +59,7 @@ public class InternalNavigator {
 	}
 
 	public void go(final LatLng location) {
-		Route request = new Route(idlePosition.location, location);
+		Route request = new Route(position.location, location);
 		request.getDirections(new DirectionsRetrieved() {
 			@Override
 			public void invoke(Directions directions) {
@@ -97,6 +97,7 @@ public class InternalNavigator {
 	}
 	
 	private void onGpsTick(Position position) {
+		this.position = position;
 		if (isNavigating()) {
 			try {
 				navigationState.update(position);
@@ -107,12 +108,9 @@ public class InternalNavigator {
 			checkArrival();
 			checkDirectionChanged();
 			checkOffPath();
-			updateVehicleMarker();
-			lastNavigationState = navigationState.snapshot();
-			navigatorStateListener.OnNavigatorTick(navigationState);
-		} else {
-			idlePosition = position;
+			tickNavigator();
 		}
+		updateVehicleMarker();
 	}
 	
 	private void checkArrival() {
@@ -123,6 +121,10 @@ public class InternalNavigator {
 	}
 	
 	private void checkDirectionChanged() {
+		if (!isNavigating()) {
+			return;
+		}
+		
 		Point currentPoint = navigationState.getCurrentPoint();
 		if (lastNavigationState != null) { 
 			Point lastPoint = lastNavigationState.getCurrentPoint();
@@ -136,6 +138,10 @@ public class InternalNavigator {
 	}
 	
 	private void checkOffPath() {
+		if (!isNavigating()) {
+			return;
+		}
+		
 		if (navigationState.getDistanceOffPath() > OFF_PATH_TOLERANCE_METERS ||
 				navigationState.getBearingDifferenceFromPath() > OFF_PATH_TOLERANCE_BEARING) {
 			
@@ -149,10 +155,23 @@ public class InternalNavigator {
 		}
 	}
 	
+	private void tickNavigator() {
+		if (!isNavigating()) {
+			return;
+		}
+		
+		lastNavigationState = navigationState.snapshot();
+		navigatorStateListener.OnNavigatorTick(navigationState);
+	}
+	
 	private void updateVehicleMarker() {
-		long timestamp = navigationState.getTime();
-		vehicle.setPosition(navigationState.isOnPath() ?
-				new Position(navigationState.getLocationOnPath(), navigationState.getBearingOnPath(), timestamp) :
-				new Position(navigationState.getLocation(), navigationState.getBearing(), timestamp));
+		if (isNavigating()) {
+			long timestamp = navigationState.getTime();
+			vehicle.setPosition(navigationState.isOnPath() ?
+					new Position(navigationState.getLocationOnPath(), navigationState.getBearingOnPath(), timestamp) :
+					new Position(navigationState.getLocation(), navigationState.getBearing(), timestamp));
+		} else {
+			vehicle.setPosition(position);
+		}
 	}
 }
