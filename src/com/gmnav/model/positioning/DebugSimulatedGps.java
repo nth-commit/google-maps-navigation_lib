@@ -1,7 +1,5 @@
 package com.gmnav.model.positioning;
 
-import java.util.List;
-
 import com.google.android.gms.maps.model.LatLng;
 
 public class DebugSimulatedGps extends AbstractSimulatedGps {
@@ -11,12 +9,15 @@ public class DebugSimulatedGps extends AbstractSimulatedGps {
 	}
 
 	@Override
-	public void followPath(List<LatLng> path) {
+	public void doFollowPath() {
 		currentPosition = new Position(currentPosition.location, 0, System.currentTimeMillis());
-		onTickHandler.invoke(currentPosition);		
-		while (path.size() > 0) {
-			advancePosition(path);
-			onTickHandler.invoke(currentPosition);				
-		}
+		onTickHandler.invoke(currentPosition);
+		whileHasCurrentPath(new WhileHasCurrentPathAction() {
+			@Override
+			public void invoke() {
+				advancePosition(currentPath);
+				onTickHandler.invoke(currentPosition);	
+			}
+		});
 	}
 }

@@ -54,22 +54,27 @@ public class InternalNavigator {
 		gps.forceTick();
 	}
 	
-	public void addNavigatorStateListener(INavigatorStateListener stateListener) {
+	public void setNavigatorStateListener(INavigatorStateListener stateListener) {
 		navigatorStateListener = stateListener;
 	}
 
-	public void go(final LatLng location) {
+	public void go(final LatLng location) {		
 		Route request = new Route(position.location, location);
 		request.getDirections(new DirectionsRetrieved() {
 			@Override
 			public void invoke(Directions directions) {
 				destination = location;
+				navigatorStateListener.OnNewPathFound(directions);
 				startNavigation(directions);
 			}
 		});
 	}
 	
 	public void stop() {
+		if (gps instanceof AbstractSimulatedGps) {
+			((AbstractSimulatedGps)gps).clearPath();
+		}
+		
 		destination = null;
 		navigationState = null;
 		lastNavigationState = null;
@@ -79,6 +84,10 @@ public class InternalNavigator {
 	
 	public boolean isNavigating() {
 		return navigationState != null;
+	}
+	
+	public LatLng getDestination() {
+		return destination;
 	}
 	
 	private void startNavigation(Directions directions) {
@@ -91,8 +100,7 @@ public class InternalNavigator {
 				((AbstractSimulatedGps)gps).followPath(directions.getLatLngPath());
 			}
 			
-			navigatorStateListener.OnDeparture();
-			navigatorStateListener.OnNewDirection(directions.getDirectionsList().get(1));
+			navigatorStateListener.OnDeparture(navigationState);
 		}
 	}
 	
@@ -115,8 +123,8 @@ public class InternalNavigator {
 	
 	private void checkArrival() {
 		if (LatLngUtil.distanceInMeters(navigationState.getLocation(), destination) <= MIN_ARRIVAL_DIST_METERS) {
+			navigatorStateListener.OnArrival(navigationState);
 			stop();
-			navigatorStateListener.OnArrival();
 		}
 	}
 	
@@ -126,12 +134,14 @@ public class InternalNavigator {
 		}
 		
 		Point currentPoint = navigationState.getCurrentPoint();
-		if (lastNavigationState != null) { 
+		if (lastNavigationState == null) {
+			navigatorStateListener.OnNewDirection(navigationState);
+		} else {
 			Point lastPoint = lastNavigationState.getCurrentPoint();
 			if (currentPoint != lastPoint) {
 				Direction currentDirection = currentPoint.nextDirection;
 				if (currentDirection != lastPoint.nextDirection) {
-					navigatorStateListener.OnNewDirection(currentDirection);
+					navigatorStateListener.OnNewDirection(navigationState);
 				}
 			}
 		}
@@ -148,7 +158,7 @@ public class InternalNavigator {
 			if (lastNavigationState != null && lastNavigationState.isOnPath()) {
 				navigationState.signalOffPath();
 			} else if (navigationState.getTime() - navigationState.getOffPathStartTime() > MAX_TIME_OFF_PATH_MS) {
-				navigatorStateListener.OnVehicleOffPath();
+				navigatorStateListener.OnVehicleOffPath(navigationState);
 			}
 		} else {
 			navigationState.signalOnPath();

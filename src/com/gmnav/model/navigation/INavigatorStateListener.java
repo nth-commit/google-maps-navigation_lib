@@ -1,18 +1,18 @@
 package com.gmnav.model.navigation;
 
-import com.gmnav.model.directions.Direction;
+import com.gmnav.model.directions.Directions;
 
 public interface INavigatorStateListener {
 	
-	void OnDeparture();
+	void OnNewPathFound(Directions directions);
 	
-	void OnArrival();
+	void OnDeparture(NavigationState state);
 	
-	void OnVehicleOffPath();
+	void OnArrival(NavigationState state);
 	
-	void OnNewDirection(Direction direction);
+	void OnVehicleOffPath(NavigationState state);
 	
-	void OnNewPathFound();
+	void OnNewDirection(NavigationState state);
 	
 	void OnNavigatorTick(NavigationState state);
 }

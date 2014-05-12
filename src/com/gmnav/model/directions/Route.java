@@ -9,6 +9,8 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 
 import android.os.AsyncTask;
+
+import com.gmnav.model.util.AsyncTaskExecutor;
 import com.google.android.gms.maps.model.LatLng;
 
 public class Route extends AsyncTask<Void, Void, String> {
@@ -30,7 +32,7 @@ public class Route extends AsyncTask<Void, Void, String> {
 	
 	public void getDirections(DirectionsRetrieved directionsRetrieved) {
 		this.directionsRetrieved = directionsRetrieved;
-		this.execute();
+		AsyncTaskExecutor.execute(this);
 	}
 	
 	private String getRequestUrl() {

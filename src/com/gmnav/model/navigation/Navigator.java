@@ -57,4 +57,12 @@ public class Navigator {
 			navigator.stop();
 		}
 	}
+	
+	public boolean isNavigating() {
+		return navigator == null ? false : navigator.isNavigating();
+	}
+	
+	public LatLng getDestination() {
+		return navigator == null ? null : navigator.getDestination();
+	}
 }

@@ -130,7 +130,7 @@ public class NavigationFragment extends Fragment implements
 	private void createNavigator() {
 		internalNavigator = new InternalNavigator(this, gps, map, options.vehicleOptions());
 		INavigatorStateListener stateListener = new DefaultNavigatorStateListener(this);
-		internalNavigator.addNavigatorStateListener(stateListener);
+		internalNavigator.setNavigatorStateListener(stateListener);
 		navigator.setInternalNavigator(internalNavigator);
 	}
 }

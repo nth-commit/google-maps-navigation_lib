@@ -2,7 +2,6 @@ package com.gmnav.model.navigation;
 
 import java.io.InvalidObjectException;
 import java.util.List;
-
 import com.gmnav.model.directions.Directions;
 import com.gmnav.model.directions.Point;
 import com.gmnav.model.positioning.Position;
@@ -29,7 +28,7 @@ public class NavigationState {
 	public NavigationState(Directions directions) {
 		path = directions.getPath();
 		currentIndex = 0;
-		currentPoint = null;
+		currentPoint = path.get(0);
 		isOnPath = true;
 		isSnapshot = false;
 	}

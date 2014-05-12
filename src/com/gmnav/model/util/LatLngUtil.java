@@ -91,18 +91,16 @@ public class LatLngUtil {
             return bearingResult;
     }
     
-    public static LatLng closestLocationOnLine(LatLng start, LatLng end, LatLng location) {
-    	double squareDistance = Math.pow(start.longitude - end.longitude, 2) + Math.pow(start.latitude - end.latitude, 2);
-    	if (squareDistance == 0) {
-    		return start;
-    	}
+    public static LatLng closestLocationOnLine(LatLng a, LatLng b, LatLng p) {
+    	double apLng = p.longitude - a.longitude;
+    	double apLat = p.latitude - a.latitude;
+    	double abLng = b.longitude - a.longitude;
+    	double abLat = b.latitude - a.latitude;
     	
-    	double interpolationFactor = ((location.longitude - start.longitude) * (end.longitude - start.longitude) +
-    			((location.latitude - start.latitude) * (end.latitude - start.latitude)) / squareDistance);
-    	double boundedIF = Math.min(1, Math.max(0, interpolationFactor));
+    	double ab2 = Math.pow(abLng, 2) + Math.pow(abLat, 2);
+    	double ap_ab = apLng * abLng + apLat * abLat;
+    	double t = MathUtil.clamp(ap_ab / ab2, 0, 1);
     	
-    	return new LatLng(
-    			start.latitude + boundedIF * (end.latitude - start.latitude),
-    			start.longitude + boundedIF * (end.longitude - start.longitude));
+    	return new LatLng(a.latitude + abLat * t, a.longitude + abLng * t);    	
     }
 }

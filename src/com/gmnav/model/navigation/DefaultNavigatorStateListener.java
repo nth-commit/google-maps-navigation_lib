@@ -1,31 +1,38 @@
 package com.gmnav.model.navigation;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.app.FragmentTransaction;
 
 import com.gmnav.DirectionFragment;
 import com.gmnav.DirectionsOverlayFragment;
+import com.gmnav.NavigationFragment;
 import com.gmnav.R;
 import com.gmnav.model.directions.Direction;
+import com.gmnav.model.directions.Directions;
 import com.gmnav.model.directions.Point;
 import com.gmnav.model.util.LatLngUtil;
 
 public class DefaultNavigatorStateListener implements INavigatorStateListener {
 	
-	private boolean DEBUG_DISABLE_DIRECTIONS = true;
+	private boolean DEBUG_DISABLE_DIRECTIONS = false;
 	
 	private DirectionsOverlayFragment directionsOverlayFragment;
 	private DirectionFragment currentDirectionFragment;
 	private Activity parentActivity;
+	private Navigator navigator;
 	
-	public DefaultNavigatorStateListener(Fragment fragment) {
+	public DefaultNavigatorStateListener(NavigationFragment fragment) {
 		parentActivity = fragment.getActivity();
+		navigator = fragment.getNavigator();
 		directionsOverlayFragment = new DirectionsOverlayFragment();
+	}
+	
+	@Override
+	public void OnNewPathFound(Directions directions) {
 	}
 
 	@Override
-	public void OnDeparture() {
+	public void OnDeparture(NavigationState state) {
 		if (!DEBUG_DISABLE_DIRECTIONS) {
 			FragmentTransaction ft = parentActivity.getFragmentManager().beginTransaction();
 			ft.add(R.id.directions_overlay_container, directionsOverlayFragment);
@@ -34,18 +41,23 @@ public class DefaultNavigatorStateListener implements INavigatorStateListener {
 	}
 
 	@Override
-	public void OnArrival() {
-		// TODO Auto-generated method stub
+	public void OnArrival(NavigationState state) {
+		if (!DEBUG_DISABLE_DIRECTIONS) {
+			FragmentTransaction ft = parentActivity.getFragmentManager().beginTransaction();
+			ft.remove(directionsOverlayFragment);
+			ft.commit();
+		}
 	}
 
 	@Override
-	public void OnVehicleOffPath() {
-		// TODO: Do rerouting here (default behaviour), not in Navigator class
+	public void OnVehicleOffPath(NavigationState state) {
+		navigator.go(navigator.getDestination());
 	}
 	
 	@Override
-	public void OnNewDirection(Direction direction) {
+	public void OnNewDirection(NavigationState state) {
 		if (!DEBUG_DISABLE_DIRECTIONS) {
+			Direction direction = state.getCurrentPoint().direction;
 			FragmentTransaction ft = parentActivity.getFragmentManager().beginTransaction();
 			if (currentDirectionFragment != null) {
 				ft.remove(currentDirectionFragment);
@@ -54,12 +66,6 @@ public class DefaultNavigatorStateListener implements INavigatorStateListener {
 			ft.add(R.id.direction_fragment_container, currentDirectionFragment);
 			ft.commit();
 		}
-	}
-	
-	@Override
-	public void OnNewPathFound() {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	public void OnNavigatorTick(NavigationState state) {

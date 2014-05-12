@@ -7,20 +7,39 @@ import com.google.android.gms.maps.model.LatLng;
 
 public abstract class AbstractSimulatedGps extends AbstractGps {
 	
-	protected Position currentPosition;
+	protected interface WhileHasCurrentPathAction {
+		void invoke();
+	}
 	
 	protected final int TICK_MS = 1000;
-	
 	private final int SPEED_LIMIT_KPH = 50;
 	private final double KPH_TO_MPS = 0.277778;
 	private final double SPEED_LIMIT_MPS = SPEED_LIMIT_KPH * KPH_TO_MPS;
 	private final double S_TO_MS = 1000;
 	
+	protected Position currentPosition;
+	protected List<LatLng> currentPath;
+	
+	private Object currentPathLock = new Object(); 
+	
 	public AbstractSimulatedGps(LatLng location) {
 		currentPosition = new Position(location, 0, System.currentTimeMillis());
 	}
 	
-	public abstract void followPath(final List<LatLng> path);
+	public void followPath(List<LatLng> path) {
+		synchronized (currentPathLock) {
+			currentPath = path;
+		}
+		doFollowPath();
+	}
+	
+	public void clearPath() {
+		synchronized (currentPathLock) {
+			currentPath = null;
+		}
+	}
+	
+	public abstract void doFollowPath();
 	
 	@Override
 	public void enableTracking() {
@@ -63,5 +82,16 @@ public abstract class AbstractSimulatedGps extends AbstractGps {
 		
 		currentPosition = new Position(currentLocation, currentBearing, newTime);
 	}
-
+	
+	protected void whileHasCurrentPath(WhileHasCurrentPathAction action) {
+		while (true) {
+			synchronized (currentPathLock) {
+				if (currentPath != null && currentPath.size() > 0) {
+					action.invoke();
+				} else {
+					break;
+				}
+			}
+		}
+	}
 }
