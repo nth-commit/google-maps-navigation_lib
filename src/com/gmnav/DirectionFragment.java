@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.gmnav.R;
 import com.gmnav.model.directions.Direction;
+import com.gmnav.model.directions.DistanceFormatter;
 import com.gmnav.model.util.LayoutUtil;
 
 import android.app.Fragment;
@@ -58,7 +59,7 @@ public class DirectionFragment extends Fragment {
 	public void setDirectionDistance(double distanceMeters) {
 		if (view != null) {
 			TextView directionDistance = (TextView)LayoutUtil.getChildViewById(view, R.id.distance_to_direction);
-			String distance = String.format("%sm", (int)distanceMeters);
+			String distance = DistanceFormatter.formatMeters(distanceMeters);
 			directionDistance.setText(distance);
 		}
 	}

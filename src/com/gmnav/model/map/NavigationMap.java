@@ -6,20 +6,15 @@ import android.graphics.Point;
 import android.view.View;
 
 import com.gmnav.model.map.MapEventsListener.OnTouchEventHandler;
-import com.gmnav.model.positioning.Position;
 import com.gmnav.model.util.PointD;
-import com.gmnav.model.vehicle.Vehicle;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
@@ -48,7 +43,6 @@ public class NavigationMap {
 	private LatLng vehicleLocation;
 	private float vehicleBearing;
 	private PointD anchor;
-	private Marker vehicleMarker;
 	private Polyline polylinePath;
 	private MapMode mapMode;
 	
