@@ -127,8 +127,6 @@ public class NavigationMap {
 		boolean isFollowing = mode == MapMode.FOLLOW;
 		if (isFollowing) {
 			setCameraPositionNavigatingDefault();
-		} else {
-			setCameraPositionIdleDefault();
 		}
 		
 		if (mapModeChangedListener != null) {
