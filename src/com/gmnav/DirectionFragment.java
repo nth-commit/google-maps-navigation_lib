@@ -45,7 +45,7 @@ public class DirectionFragment extends Fragment {
 		if (view == null) {
 			view = (GridLayout)inflater.inflate(R.layout.direction_fragment, container, false);
 		}
-		setDirectionDescription(direction.text);
+		setDirectionDescription(direction.getText());
 		return view;
 	}
 	
