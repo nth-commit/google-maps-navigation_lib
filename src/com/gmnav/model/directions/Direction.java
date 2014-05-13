@@ -1,12 +1,7 @@
 package com.gmnav.model.directions;
 
 import java.util.List;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.text.Html;
-
 import com.google.android.gms.maps.model.LatLng;
 
 public class Direction {
@@ -14,24 +9,15 @@ public class Direction {
 	private List<LatLng> path;
 	private int timeSeconds;
 	private int distanceMeters;
+	private double distanceMetersCalculated;
 	private String text;
 	private String htmlText;
 	
-	public Direction(List<LatLng> path) {
-		this.path = path;
-	}
-	
-	public Direction(List<LatLng> path, JSONObject googleStep) throws JSONException {
-		this(path);
-		timeSeconds = googleStep.getJSONObject("duration").getInt("value");
-		distanceMeters = googleStep.getJSONObject("distance").getInt("value");
-		htmlText = googleStep.getString("html_instructions");
+	public Direction(List<LatLng> path, int timeSeconds, int distanceMeters, String htmlText) {
+		this.timeSeconds = timeSeconds;
+		this.distanceMeters = distanceMeters;
+		this.htmlText = htmlText;
 		text = Html.fromHtml(htmlText).toString();
-	}
-	
-	public static Direction createArrivalDirection(List<LatLng> path) {
-		Direction arrivalDirection = new Direction(path);
-		return arrivalDirection;
 	}
 	
 	public List<LatLng> getPath() {
@@ -44,6 +30,10 @@ public class Direction {
 	
 	public int getDistanceInMeters() {
 		return distanceMeters;
+	}
+	
+	public double getDistanceInMetersCalculated() {
+		return distanceMetersCalculated;
 	}
 	
 	public String getHtmlText() {
