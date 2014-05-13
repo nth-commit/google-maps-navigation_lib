@@ -72,8 +72,11 @@ public class DefaultNavigatorStateListener implements INavigatorStateListener {
 		if (!DEBUG_DISABLE_DIRECTIONS) {
 			Point currentPoint = state.getCurrentPoint();
 			Point nextPoint = currentPoint.nextPoint;
-			double distanceToDirection = LatLngUtil.distanceInMeters(state.getLocationOnPath(), nextPoint.location) +
-					nextPoint.distanceToCurrentDirectionMeters;
+			double distanceToNextPoint = LatLngUtil.distanceInMeters(state.getLocationOnPath(), nextPoint.location);
+			double distanceToDirection = distanceToNextPoint + nextPoint.distanceToCurrentDirectionMeters;
+			double directionDistance = currentPoint.direction.getDistanceInMeters();
+			double distanceProgress = directionDistance == 0 ? 0 : distanceToDirection / directionDistance;
+			double timeToDirection = distanceProgress * currentPoint.timeToCurrentDirectionSeconds;
 			currentDirectionFragment.setDirectionDistance(distanceToDirection);
 		}
 	}

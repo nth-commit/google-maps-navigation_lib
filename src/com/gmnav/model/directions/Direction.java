@@ -9,11 +9,11 @@ public class Direction {
 	private List<LatLng> path;
 	private int timeSeconds;
 	private int distanceMeters;
-	private double distanceMetersCalculated;
 	private String text;
 	private String htmlText;
 	
 	public Direction(List<LatLng> path, int timeSeconds, int distanceMeters, String htmlText) {
+		this.path = path;
 		this.timeSeconds = timeSeconds;
 		this.distanceMeters = distanceMeters;
 		this.htmlText = htmlText;
@@ -31,11 +31,7 @@ public class Direction {
 	public int getDistanceInMeters() {
 		return distanceMeters;
 	}
-	
-	public double getDistanceInMetersCalculated() {
-		return distanceMetersCalculated;
-	}
-	
+
 	public String getHtmlText() {
 		return htmlText;
 	}

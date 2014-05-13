@@ -93,7 +93,7 @@ public class Directions {
 	private Point createPoint(final LatLng loc, final Direction dir, final Point next) {
 		final boolean isNewDirection = next.direction != dir;
 		final double distanceToNext = LatLngUtil.distanceInMeters(loc, next.location);
-		double directionDistance = dir.getDistanceInMetersCalculated();
+		double directionDistance = dir.getDistanceInMeters();
 		double ratioOfTotalDistance = directionDistance == 0 ? 0 : distanceToNext / directionDistance;
 		final double timeToNext = ratioOfTotalDistance == 0 ? 0 : dir.getTimeInSeconds() * ratioOfTotalDistance;
 		
