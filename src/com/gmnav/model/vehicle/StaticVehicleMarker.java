@@ -74,7 +74,7 @@ public class StaticVehicleMarker implements IVehicleMarker {
 			markerImageView.setImageBitmap(flattenedImage);
 			
 			final Point mapSize = map.getSize();
-			final PointD anchor = vehicle.getAnchor();
+			final PointD anchor = vehicle.getScreenAnchor();
 			LayoutParams layout = new LayoutParams(imageWidth, imageHeight) {{
 				leftMargin = (int)((mapSize.x * anchor.x) - width / 2);
 				topMargin = (int)((mapSize.y * anchor.y) - height / 2);

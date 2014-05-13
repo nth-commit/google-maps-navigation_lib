@@ -23,7 +23,7 @@ public class Vehicle {
 	private static final int GPS_DELAY_MS = 500;
 	
 	private Bitmap image;
-	private PointD anchor;
+	private PointD screenAnchor;
 	private NavigationMap map;
 	
 	private ArrayList<Position> targetPositions;
@@ -39,7 +39,7 @@ public class Vehicle {
 		this.map = map;
 		location = options.location();
 		image = options.image();
-		anchor = options.anchor();
+		screenAnchor = options.screenAnchor();
 		targetPositions = new ArrayList<Position>();
 		
 		latLngMarker = new LatLngVehicleMarker(this, map);
@@ -166,7 +166,7 @@ public class Vehicle {
 		return image;
 	}
 	
-	public PointD getAnchor() {
-		return anchor;
+	public PointD getScreenAnchor() {
+		return screenAnchor;
 	}
 }

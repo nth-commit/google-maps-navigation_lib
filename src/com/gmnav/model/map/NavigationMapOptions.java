@@ -7,7 +7,7 @@ import com.google.android.gms.maps.model.LatLng;
 public class NavigationMapOptions {
 	
 	private LatLng location = Defaults.LOCATION;
-	private PointD anchor = new PointD(0.5, 0.5);
+	private PointD anchor = new PointD(0.5, 0.75); // TODO: get from VehicleOptions
 	
 	public LatLng location() {
 		return location;

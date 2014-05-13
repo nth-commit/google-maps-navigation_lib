@@ -9,7 +9,8 @@ import com.google.android.gms.maps.model.LatLng;
 public class VehicleOptions {
 	private LatLng location = Defaults.LOCATION;
 	private Bitmap image;
-	private PointD anchor = new PointD(0.5d, 0.5d);
+	private PointD imageAnchor = new PointD(0.5, 0.5); // TODO: Implement me.
+	private PointD screenAnchor = new PointD(0.5d, 0.75d);
 	
 	public VehicleOptions location(LatLng location) {
 		this.location = location;
@@ -29,12 +30,12 @@ public class VehicleOptions {
 		return image;
 	}
 	
-	public VehicleOptions anchor(PointD anchor) {
-		this.anchor = anchor;
+	public VehicleOptions screenAnchor(PointD screenAnchor) {
+		this.screenAnchor = screenAnchor;
 		return this;
 	}
 	
-	public PointD anchor() {
-		return anchor;
+	public PointD screenAnchor() {
+		return screenAnchor;
 	}
 }
