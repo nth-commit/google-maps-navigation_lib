@@ -14,7 +14,7 @@ public interface IGps {
 	
 	void forceTick();
 	
-	void onTick(OnTickHandler handler);
+	void setOnTickHandler(OnTickHandler handler);
 	
 	LatLng getLastLocation();
 }

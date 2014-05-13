@@ -6,8 +6,8 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class SimulatedGps extends AbstractSimulatedGps {
 	
-	public SimulatedGps(LatLng location) {
-		super(location);
+	public SimulatedGps(GpsOptions options, LatLng location) {
+		super(options, location);
 	}
 	
 	@Override
@@ -23,7 +23,7 @@ public class SimulatedGps extends AbstractSimulatedGps {
 						advancePosition(currentPath);
 						publishProgress();
 						try {
-							Thread.sleep(TICK_MS);
+							Thread.sleep(updateIntervalMs);
 						} catch (InterruptedException ex) {
 							ex.printStackTrace();
 						}	

@@ -11,7 +11,6 @@ public abstract class AbstractSimulatedGps extends AbstractGps {
 		void invoke();
 	}
 	
-	protected final int TICK_MS = 1000;
 	private final int SPEED_LIMIT_KPH = 50;
 	private final double KPH_TO_MPS = 0.277778;
 	private final double SPEED_LIMIT_MPS = SPEED_LIMIT_KPH * KPH_TO_MPS;
@@ -22,7 +21,8 @@ public abstract class AbstractSimulatedGps extends AbstractGps {
 	
 	private Object currentPathLock = new Object(); 
 	
-	public AbstractSimulatedGps(LatLng location) {
+	public AbstractSimulatedGps(GpsOptions options, LatLng location) {
+		super(options);
 		currentPosition = new Position(location, 0, System.currentTimeMillis());
 	}
 	
@@ -62,7 +62,7 @@ public abstract class AbstractSimulatedGps extends AbstractGps {
 	
 	protected void advancePosition(List<LatLng> path) {
 		long newTime = System.currentTimeMillis();
-		long timePassedMillisconds = TICK_MS; // newTime - currentPosition.timestamp;
+		long timePassedMillisconds = updateIntervalMs;
 		double distanceRemaining = (timePassedMillisconds / S_TO_MS) * SPEED_LIMIT_MPS;
 		LatLng currentLocation = currentPosition.location;
 		double currentBearing = 0;

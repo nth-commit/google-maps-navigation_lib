@@ -11,12 +11,11 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class Gps extends AbstractGps implements LocationListener {
 	
-	private static final int UPDATE_INTERVAL_MS = 1000;
-	
 	private LocationClient locationClient;
 	private boolean isTrackingEnabled = false;
 	
-	public Gps(LocationClient locationClient) {
+	public Gps(GpsOptions options, LocationClient locationClient) {
+		super(options);
 		this.locationClient = locationClient;
 	}
 
@@ -25,7 +24,7 @@ public class Gps extends AbstractGps implements LocationListener {
 		if (!isTrackingEnabled) {
 			LocationRequest request = LocationRequest.create();
 			request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-			request.setInterval(UPDATE_INTERVAL_MS);
+			request.setInterval(updateIntervalMs);
 			this.locationClient.requestLocationUpdates(request, this);
 			isTrackingEnabled = true;
 		}

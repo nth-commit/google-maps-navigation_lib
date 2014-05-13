@@ -20,7 +20,7 @@ public class Vehicle {
 	
 	private static final int TARGET_FRAMES_PER_S = 20;
 	private static final int MS_PER_FRAME = 1000 / TARGET_FRAMES_PER_S;
-	private static final int GPS_DELAY_MS = 2000;
+	private static final int GPS_DELAY_MS = 500;
 	
 	private Bitmap image;
 	private PointD anchor;

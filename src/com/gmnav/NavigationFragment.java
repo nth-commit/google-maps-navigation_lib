@@ -11,10 +11,8 @@ import com.gmnav.model.navigation.INavigatorStateListener;
 import com.gmnav.model.navigation.InternalNavigator;
 import com.gmnav.model.navigation.NavigationOptions;
 import com.gmnav.model.navigation.Navigator;
-import com.gmnav.model.positioning.DebugSimulatedGps;
-import com.gmnav.model.positioning.Gps;
+import com.gmnav.model.positioning.GpsFactory;
 import com.gmnav.model.positioning.IGps;
-import com.gmnav.model.positioning.SimulatedGps;
 import com.gmnav.model.positioning.GpsOptions.GpsType;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
@@ -80,7 +78,7 @@ public class NavigationFragment extends Fragment implements
 			locationClient = new LocationClient(parent, this, this);
 			locationClient.connect();
 		} else {
-			createGps();
+			gps = GpsFactory.create(options.gpsOptions());
 			createNavigator();
 		}
 		
@@ -102,7 +100,7 @@ public class NavigationFragment extends Fragment implements
 
 	@Override
 	public void onConnected(Bundle dataBundle) {
-		createGps();
+		gps = GpsFactory.create(options.gpsOptions(), locationClient);
 		createNavigator();			
 	}
 
@@ -113,18 +111,6 @@ public class NavigationFragment extends Fragment implements
 	
 	public Navigator getNavigator() {
 		return navigator;
-	}
-	
-	private void createGps() {
-		if (options.gpsOptions().gpsType() == GpsType.SIMULATED) {
-			if (options.gpsOptions().debugMode()) {
-				gps = new DebugSimulatedGps(Defaults.LOCATION);
-			} else {
-				gps = new SimulatedGps(Defaults.LOCATION);
-			}
-		} else {
-			gps = new Gps(locationClient);
-		}
 	}
 	
 	private void createNavigator() {

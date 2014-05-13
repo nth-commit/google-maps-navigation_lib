@@ -4,8 +4,8 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class DebugSimulatedGps extends AbstractSimulatedGps {
 	
-	public DebugSimulatedGps(LatLng location) {
-		super(location);
+	public DebugSimulatedGps(GpsOptions options, LatLng location) {
+		super(options, location);
 	}
 
 	@Override

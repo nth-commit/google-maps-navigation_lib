@@ -44,7 +44,7 @@ public class InternalNavigator {
 	}
 	
 	private void listenToGps() {
-		gps.onTick(new OnTickHandler() {
+		gps.setOnTickHandler(new OnTickHandler() {
 			@Override
 			public void invoke(Position position) {
 				onGpsTick(position);

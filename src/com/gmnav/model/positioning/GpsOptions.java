@@ -9,6 +9,7 @@ public class GpsOptions {
 	
 	private GpsType gpsType = GpsType.REAL;
 	private boolean debugMode = false;
+	private int updateIntervalMilliseconds = 500;
 	
 	public GpsOptions gpsType(GpsType gpsType) {
 		this.gpsType = gpsType;
@@ -26,5 +27,14 @@ public class GpsOptions {
 	
 	public boolean debugMode() {
 		return debugMode;
+	}
+	
+	public GpsOptions updateIntervalMilliseconds(int updateIntervalMilliseconds) {
+		this.updateIntervalMilliseconds = updateIntervalMilliseconds;
+		return this;
+	}
+	
+	public int updateIntervalMilliseconds() {
+		return updateIntervalMilliseconds;
 	}
 }
