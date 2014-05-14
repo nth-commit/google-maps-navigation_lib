@@ -9,7 +9,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class DirectionFactory {
 	
-	public static Direction createDepartureDirection(List<LatLng> path, int timeSeconds, int distanceMeters, String htmlText, String originAddress) {
+	public static Direction createDepartureDirection(List<LatLng> path, int timeSeconds, int distanceMeters, String htmlText) {
 		String text = getTextFromHtmlText(htmlText);
 		String[] significantInfo = parseHtmlTextForSignificantInfo(htmlText);
 		String current = significantInfo[1];

@@ -45,7 +45,7 @@ public class Directions {
 			JSONObject googleStep = steps.getJSONObject(i);
 			String htmlText = googleStep.getString("html_instructions");
 			Direction currentDirection = i == 0 ? 
-					DirectionFactory.createDepartureDirection(nextDirectionPath, nextDirectionTime, nextDirectionDistance, htmlText, originAddress) :
+					DirectionFactory.createDepartureDirection(nextDirectionPath, nextDirectionTime, nextDirectionDistance, htmlText) :
 						DirectionFactory.createTransitDirection(nextDirectionPath, nextDirectionTime, nextDirectionDistance, htmlText, previousDirection);
 			directions.add(currentDirection);
 			
