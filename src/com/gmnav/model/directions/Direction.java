@@ -1,7 +1,6 @@
 package com.gmnav.model.directions;
 
 import java.util.List;
-import android.text.Html;
 import com.google.android.gms.maps.model.LatLng;
 
 public class Direction {
@@ -10,14 +9,18 @@ public class Direction {
 	private int timeSeconds;
 	private int distanceMeters;
 	private String text;
-	private String htmlText;
+	private String current;
+	private String target;
+	private Movement movement;
 	
-	public Direction(List<LatLng> path, int timeSeconds, int distanceMeters, String htmlText) {
+	public Direction(List<LatLng> path, int timeSeconds, int distanceMeters, String text, String current, String target, Movement movement) {
 		this.path = path;
 		this.timeSeconds = timeSeconds;
 		this.distanceMeters = distanceMeters;
-		this.htmlText = htmlText;
-		text = Html.fromHtml(htmlText).toString();
+		this.text = text;
+		this.current = current;
+		this.target = target;
+		this.movement = movement;
 	}
 	
 	public List<LatLng> getPath() {
@@ -31,12 +34,25 @@ public class Direction {
 	public int getDistanceInMeters() {
 		return distanceMeters;
 	}
-
-	public String getHtmlText() {
-		return htmlText;
-	}
 	
 	public String getText() {
+		return text;
+	}
+
+	public String getTarget() {
+		return target;
+	}
+	
+	public String getCurrent() {
+		return current;
+	}
+	
+	public Movement getMovement() {
+		return movement;
+	}
+	
+	@Override
+	public String toString() {
 		return text;
 	}
 }
