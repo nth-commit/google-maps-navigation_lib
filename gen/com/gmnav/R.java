@@ -204,11 +204,15 @@ containing a value of this type.
         public static int common_signin_btn_text_normal_light=0x7f020015;
         public static int common_signin_btn_text_pressed_dark=0x7f020016;
         public static int common_signin_btn_text_pressed_light=0x7f020017;
-        public static int ic_launcher=0x7f020018;
-        public static int ic_plusone_medium_off_client=0x7f020019;
-        public static int ic_plusone_small_off_client=0x7f02001a;
-        public static int ic_plusone_standard_off_client=0x7f02001b;
-        public static int ic_plusone_tall_off_client=0x7f02001c;
+        public static int continue_87ceeb=0x7f020018;
+        public static int depart_87ceeb=0x7f020019;
+        public static int ic_launcher=0x7f02001a;
+        public static int ic_plusone_medium_off_client=0x7f02001b;
+        public static int ic_plusone_small_off_client=0x7f02001c;
+        public static int ic_plusone_standard_off_client=0x7f02001d;
+        public static int ic_plusone_tall_off_client=0x7f02001e;
+        public static int turn_left_87ceeb=0x7f02001f;
+        public static int turn_right_87ceeb=0x7f020020;
     }
     public static final class id {
         public static int demo_navigation_fragment=0x7f05000c;
@@ -222,7 +226,6 @@ containing a value of this type.
         public static int distance_to_direction=0x7f050012;
         public static int fragment_layout=0x7f050005;
         public static int hybrid=0x7f050004;
-        public static int image_view=0x7f050015;
         public static int map_events_listener_view=0x7f050009;
         public static int map_fragment=0x7f050006;
         public static int navigation_activity_navigation_fragment=0x7f05000a;

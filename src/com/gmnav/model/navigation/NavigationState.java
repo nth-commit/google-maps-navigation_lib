@@ -21,6 +21,8 @@ public class NavigationState {
 	private double bearingDifferenceFromPath;
 	private int currentIndex;
 	private Point currentPoint;
+	private double distanceToNextPoint;
+	private double progressAlongSegment;
 	private boolean isOnPath;
 	private long offPathStartTime;
 	private boolean isSnapshot;
@@ -56,6 +58,8 @@ public class NavigationState {
 			this.position = position;
 			calculateLocationOnPath();
 			calculateBearingOnPath();
+			calculateDistanceToNextPoint();
+			calculateProgressAlongSegment();
 		}
 	}
 	
@@ -112,6 +116,29 @@ public class NavigationState {
 		return offPathStartTime;
 	}
 	
+	public double getDistanceToCurrentDirection() {
+		Point nextPoint = currentPoint.nextPoint;
+		return nextPoint == null ? 0 : distanceToNextPoint + nextPoint.distanceToCurrentDirectionMeters;
+	}
+	
+	public double getDistanceToArrival() {
+		Point nextPoint = currentPoint.nextPoint;
+		return nextPoint == null ? 0 : distanceToNextPoint + nextPoint.distanceToArrivalMeters;
+	}
+	
+	public double getTimeToCurrentDirection() {
+		Point nextPoint = currentPoint.nextPoint;
+		double timeFromNextPoint = nextPoint == null ? 0 : nextPoint.timeToCurrentDirectionSeconds;
+		return progressAlongSegment * currentPoint.timeToCurrentDirectionSeconds + timeFromNextPoint;
+	}
+	
+	public double getTimeToArrival() {
+		Point nextPoint = currentPoint.nextPoint;
+		double timeToNextPoint = progressAlongSegment * currentPoint.timeToCurrentDirectionSeconds;
+		return nextPoint == null || currentPoint.direction != nextPoint.direction ? timeToNextPoint :
+			timeToNextPoint + nextPoint.timeToArrivalSeconds;
+	}
+
 	private void calculateLocationOnPath() {
 		double bestDistanceOffPath = Double.MAX_VALUE;
 		int bestIndex = 0;
@@ -144,5 +171,20 @@ public class NavigationState {
 	private void calculateBearingOnPath() {
 		bearingOnPath = LatLngUtil.initialBearing(currentPoint.location, currentPoint.nextPoint.location);
 		bearingDifferenceFromPath = Math.max(bearingOnPath, position.bearing) - Math.min(bearingOnPath, position.bearing);
+	}
+	
+	private void calculateDistanceToNextPoint() {
+		Point nextPoint = currentPoint.nextPoint;
+		if (nextPoint != null) {
+			distanceToNextPoint = LatLngUtil.distanceInMeters(locationOnPath, nextPoint.location);
+		}
+	}
+	
+	private void calculateProgressAlongSegment() {
+		Point nextPoint = currentPoint.nextPoint;
+		if (nextPoint != null) {
+			double segmentDistance = currentPoint.distanceToNextPointMeters;
+			progressAlongSegment = segmentDistance == 0 ? 0 : distanceToNextPoint / segmentDistance; 
+		}
 	}
 }
