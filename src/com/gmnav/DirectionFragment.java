@@ -7,23 +7,28 @@ import com.gmnav.R;
 import com.gmnav.model.directions.Direction;
 import com.gmnav.model.directions.DistanceFormatter;
 import com.gmnav.model.directions.ImageFactory;
-import com.gmnav.model.directions.Movement;
 import com.gmnav.model.util.LayoutUtil;
 
 import android.app.Fragment;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridLayout;
 import android.widget.ImageView;
+import android.widget.GridLayout.LayoutParams;
 import android.widget.TextView;
 
 public class DirectionFragment extends Fragment {
 	
+	private final static int LAYOUT_PADDING = 10;
+	
 	private Direction direction;
 	private GridLayout view;
+	
+	private ImageView directionImage;
+	private TextView directionDistance;
+	private TextView directionDescription;
 	
 	private static List<Direction> directionsById = new ArrayList<Direction>();
 	
@@ -49,10 +54,40 @@ public class DirectionFragment extends Fragment {
 		if (view == null) {
 			view = (GridLayout)inflater.inflate(R.layout.direction_fragment, container, false);
 		}
+		view.setPadding(LAYOUT_PADDING, LAYOUT_PADDING, LAYOUT_PADDING, LAYOUT_PADDING);
+		createChildReferences();
+		arrangeChildViews(container);
 		
 		setDirectionDescription(generateDirectionDescription());
 		setDirectionImage();
 		return view;
+	}
+	
+	private void createChildReferences() {
+		directionImage = (ImageView)LayoutUtil.getChildViewById(view, R.id.direction_image);
+		directionDistance = (TextView)LayoutUtil.getChildViewById(view, R.id.distance_to_direction);
+		directionDescription = (TextView)LayoutUtil.getChildViewById(view, R.id.direction_description_text); 
+	}
+	
+	private void arrangeChildViews(ViewGroup container) {
+		int paddingSize = 2 * LAYOUT_PADDING;
+		int workingWidth = container.getMeasuredWidth() - paddingSize;
+		int workingHeight = container.getMeasuredHeight() - paddingSize;
+		arrangeTurnDistanceViews(workingWidth, workingHeight);
+	}
+	
+	private void arrangeTurnDistanceViews(int workingWidth, int workingHeight) {
+		int remainingHeight = workingHeight; 
+		int directionImageMargin = (int)(0.1 * workingHeight);
+		remainingHeight -= directionImageMargin;
+		int directionImageSize = (int)(0.75 * remainingHeight);
+		remainingHeight -= directionImageSize;
+		
+		LayoutParams directionImageLP = (LayoutParams)directionImage.getLayoutParams();
+		directionImageLP.width = directionImageSize;
+		directionImageLP.height = directionImageSize;
+		directionImageLP.setMargins(directionImageMargin, directionImageMargin, directionImageMargin, 0);
+		directionImage.setLayoutParams(directionImageLP);
 	}
 	
 	private String generateDirectionDescription() {
@@ -75,21 +110,21 @@ public class DirectionFragment extends Fragment {
 	
 	public void setDirectionImage() {
 		if (view != null) {
-			ImageView directionImage = (ImageView)LayoutUtil.getChildViewById(view, R.id.direction_image);
+			directionImage = (ImageView)LayoutUtil.getChildViewById(view, R.id.direction_image);
 			directionImage.setImageResource(ImageFactory.getImageResource(directionImage.getContext(), direction, "87ceeb"));
 		}
 	}
 	
 	public void setDirectionDescription(String text) {
 		if (view != null) {
-			TextView directionDescription = (TextView)LayoutUtil.getChildViewById(view, R.id.direction_description_text); 
+			directionDescription = (TextView)LayoutUtil.getChildViewById(view, R.id.direction_description_text); 
 			directionDescription.setText(text);
 		}
 	}
 	
 	public void setDirectionDistance(double distanceMeters) {
 		if (view != null) {
-			TextView directionDistance = (TextView)LayoutUtil.getChildViewById(view, R.id.distance_to_direction);
+			directionDistance = (TextView)LayoutUtil.getChildViewById(view, R.id.distance_to_direction);
 			String distance = DistanceFormatter.formatMeters(distanceMeters);
 			directionDistance.setText(distance);
 		}

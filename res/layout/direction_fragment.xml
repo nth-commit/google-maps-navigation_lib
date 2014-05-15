@@ -7,25 +7,19 @@
     <ImageView
         android:id="@+id/direction_image"
         android:layout_column="0"
-        android:layout_gravity="center"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
         android:layout_row="0"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:contentDescription="@+id/direction_image" />
 
     <TextView
         android:id="@+id/distance_to_direction"
         android:layout_column="0"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
         android:layout_row="1"
+        android:layout_gravity="fill"
+        android:gravity="center_horizontal"
         android:textColor="#FFFFFFFF"
-        android:textSize="32sp"
+        android:textSize="30sp"
         android:textStyle="bold" />
 
     <View
