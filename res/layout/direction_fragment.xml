@@ -20,9 +20,11 @@
         android:gravity="center_horizontal"
         android:textColor="#FFFFFFFF"
         android:textSize="30sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:includeFontPadding="false"/>
 
     <View
+        android:id="@+id/direction_divider"
         android:layout_width="2dp"
         android:layout_height="match_parent"
         android:layout_column="1"
@@ -36,11 +38,12 @@
     <TextView
         android:id="@+id/direction_description_text"
         android:layout_height="match_parent"
-        android:layout_column="2"
-        android:layout_gravity="fill"
+        android:layout_width="wrap_content"
         android:layout_margin="10dp"
+        android:layout_column="2"
         android:layout_row="0"
         android:layout_rowSpan="2"
+        android:layout_gravity="fill"
         android:maxLines="2"
         android:lines="2"
         android:textAlignment="gravity"

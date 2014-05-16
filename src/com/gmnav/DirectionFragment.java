@@ -28,6 +28,7 @@ public class DirectionFragment extends Fragment {
 	
 	private ImageView directionImage;
 	private TextView directionDistance;
+	private View directionDivider;
 	private TextView directionDescription;
 	
 	private static List<Direction> directionsById = new ArrayList<Direction>();
@@ -66,6 +67,7 @@ public class DirectionFragment extends Fragment {
 	private void createChildReferences() {
 		directionImage = (ImageView)LayoutUtil.getChildViewById(view, R.id.direction_image);
 		directionDistance = (TextView)LayoutUtil.getChildViewById(view, R.id.distance_to_direction);
+		directionDivider = LayoutUtil.getChildViewById(view, R.id.direction_divider);
 		directionDescription = (TextView)LayoutUtil.getChildViewById(view, R.id.direction_description_text); 
 	}
 	
@@ -73,21 +75,38 @@ public class DirectionFragment extends Fragment {
 		int paddingSize = 2 * LAYOUT_PADDING;
 		int workingWidth = container.getMeasuredWidth() - paddingSize;
 		int workingHeight = container.getMeasuredHeight() - paddingSize;
-		arrangeTurnDistanceViews(workingWidth, workingHeight);
+		
+		LayoutParams imageLayoutParams = arrangeDirectionImage(workingWidth, workingHeight);
+		arrangeDirectionDescription(workingWidth, imageLayoutParams);
 	}
 	
-	private void arrangeTurnDistanceViews(int workingWidth, int workingHeight) {
+	private LayoutParams arrangeDirectionImage(int workingWidth, int workingHeight) {
 		int remainingHeight = workingHeight; 
 		int directionImageMargin = (int)(0.1 * workingHeight);
 		remainingHeight -= directionImageMargin;
 		int directionImageSize = (int)(0.75 * remainingHeight);
 		remainingHeight -= directionImageSize;
 		
-		LayoutParams directionImageLP = (LayoutParams)directionImage.getLayoutParams();
-		directionImageLP.width = directionImageSize;
-		directionImageLP.height = directionImageSize;
-		directionImageLP.setMargins(directionImageMargin, directionImageMargin, directionImageMargin, 0);
-		directionImage.setLayoutParams(directionImageLP);
+		LayoutParams imageLayoutParams = (LayoutParams)directionImage.getLayoutParams();
+		imageLayoutParams.width = directionImageSize;
+		imageLayoutParams.height = directionImageSize;
+		imageLayoutParams.setMargins(directionImageMargin, directionImageMargin, directionImageMargin, 0);
+		directionImage.setLayoutParams(imageLayoutParams);
+		return imageLayoutParams;
+	}
+	
+	private void arrangeDirectionDescription(int workingWidth, LayoutParams imageLayoutParams) {
+		int directionImageWidth = imageLayoutParams.width + imageLayoutParams.leftMargin + imageLayoutParams.rightMargin;
+		LayoutParams dividerLayoutParams = (LayoutParams)directionDivider.getLayoutParams();
+		int directionDescriptionWorkingWidth = workingWidth - directionImageWidth - dividerLayoutParams.width - LAYOUT_PADDING;
+		
+		int directionDescriptionHorizontalMargin = (int)(0.05 * directionDescriptionWorkingWidth);
+		directionDescriptionWorkingWidth -= directionDescriptionHorizontalMargin;
+		
+		LayoutParams descriptionParams = (LayoutParams)directionDescription.getLayoutParams();
+		descriptionParams.width = directionDescriptionWorkingWidth;
+		descriptionParams.setMargins(directionDescriptionHorizontalMargin, 0, directionDescriptionHorizontalMargin, 0);
+		directionDescription.setLayoutParams(descriptionParams);
 	}
 	
 	private String generateDirectionDescription() {
