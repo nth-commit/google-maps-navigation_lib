@@ -15,7 +15,8 @@
     <item name="direction_divider" type="id" />
     <item name="direction_fragment_container" type="id" />
     <item name="directions_overlay_container" type="id" />
-    <item name="direction_description_text" type="id" />
+    <item name="direction_description_fragment_placeholder" type="id" />
+    <item name="direction_description_fragment" type="id" />
     
     <item name="static_vehicle_marker" type="id" />
     <item name="static_vehicle_marker_container" type="id" />

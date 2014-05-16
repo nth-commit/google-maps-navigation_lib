@@ -10,6 +10,7 @@ import com.gmnav.model.directions.ImageFactory;
 import com.gmnav.model.util.LayoutUtil;
 
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.GridLayout.LayoutParams;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class DirectionFragment extends Fragment {
@@ -29,8 +31,9 @@ public class DirectionFragment extends Fragment {
 	private ImageView directionImage;
 	private TextView directionDistance;
 	private View directionDivider;
-	private TextView directionDescription;
-	
+	private LinearLayout directionDescriptionContainer;
+	private DirectionDescriptionFragment directionDescription;
+
 	private static List<Direction> directionsById = new ArrayList<Direction>();
 	
 	public static final DirectionFragment newInstance(Direction direction) {
@@ -58,8 +61,6 @@ public class DirectionFragment extends Fragment {
 		view.setPadding(LAYOUT_PADDING, LAYOUT_PADDING, LAYOUT_PADDING, LAYOUT_PADDING);
 		createChildReferences();
 		arrangeChildViews(container);
-		
-		setDirectionDescription(generateDirectionDescription());
 		setDirectionImage();
 		return view;
 	}
@@ -68,7 +69,11 @@ public class DirectionFragment extends Fragment {
 		directionImage = (ImageView)LayoutUtil.getChildViewById(view, R.id.direction_image);
 		directionDistance = (TextView)LayoutUtil.getChildViewById(view, R.id.distance_to_direction);
 		directionDivider = LayoutUtil.getChildViewById(view, R.id.direction_divider);
-		directionDescription = (TextView)LayoutUtil.getChildViewById(view, R.id.direction_description_text); 
+		directionDescriptionContainer = (LinearLayout)LayoutUtil.getChildViewById(view, R.id.direction_description_fragment_placeholder);
+		directionDescription = DirectionDescriptionFragment.newInstance(direction);
+		FragmentTransaction ft = getActivity().getFragmentManager().beginTransaction();
+		ft.add(directionDescriptionContainer.getId(), directionDescription);
+		ft.commit();
 	}
 	
 	private void arrangeChildViews(ViewGroup container) {
@@ -103,41 +108,16 @@ public class DirectionFragment extends Fragment {
 		int directionDescriptionHorizontalMargin = (int)(0.05 * directionDescriptionWorkingWidth);
 		directionDescriptionWorkingWidth -= directionDescriptionHorizontalMargin;
 		
-		LayoutParams descriptionParams = (LayoutParams)directionDescription.getLayoutParams();
+		LayoutParams descriptionParams = (LayoutParams)directionDescriptionContainer.getLayoutParams();
 		descriptionParams.width = directionDescriptionWorkingWidth;
 		descriptionParams.setMargins(directionDescriptionHorizontalMargin, 0, directionDescriptionHorizontalMargin, 0);
-		directionDescription.setLayoutParams(descriptionParams);
-	}
-	
-	private String generateDirectionDescription() {
-		String directionDescription;
-		switch (direction.getMovement()) {
-			case DEPARTURE:
-				directionDescription = direction.getCurrent() + " toward " + direction.getTarget();
-				break;
-			case TURN_LEFT:
-			case TURN_RIGHT:
-			case CONTINUE:
-			case ARRIVAL:
-				directionDescription = direction.getTarget();
-				break;
-			default:
-				directionDescription = "Unknown";
-		}
-		return directionDescription;
+		directionDescriptionContainer.setLayoutParams(descriptionParams);
 	}
 	
 	public void setDirectionImage() {
 		if (view != null) {
 			directionImage = (ImageView)LayoutUtil.getChildViewById(view, R.id.direction_image);
 			directionImage.setImageResource(ImageFactory.getImageResource(directionImage.getContext(), direction, "87ceeb"));
-		}
-	}
-	
-	public void setDirectionDescription(String text) {
-		if (view != null) {
-			directionDescription = (TextView)LayoutUtil.getChildViewById(view, R.id.direction_description_text); 
-			directionDescription.setText(text);
 		}
 	}
 	
