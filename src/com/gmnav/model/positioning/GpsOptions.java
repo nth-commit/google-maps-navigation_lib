@@ -1,5 +1,10 @@
 package com.gmnav.model.positioning;
 
+import java.util.List;
+
+import com.gmnav.Defaults;
+import com.google.android.gms.maps.model.LatLng;
+
 public class GpsOptions {
 	
 	public enum GpsType {
@@ -10,6 +15,8 @@ public class GpsOptions {
 	private GpsType gpsType = GpsType.REAL;
 	private boolean debugMode = false;
 	private int updateIntervalMilliseconds = 500;
+	private LatLng simulatedLocation = Defaults.LOCATION;
+	private List<LatLng> simulatedPath;
 	
 	public GpsOptions gpsType(GpsType gpsType) {
 		this.gpsType = gpsType;
@@ -36,5 +43,23 @@ public class GpsOptions {
 	
 	public int updateIntervalMilliseconds() {
 		return updateIntervalMilliseconds;
+	}
+	
+	public GpsOptions simulatedLocation(LatLng simulatedLocation) {
+		this.simulatedLocation = simulatedLocation;
+		return this;
+	}
+	
+	public LatLng simulatedLocation() {
+		return simulatedLocation;
+	}
+	
+	public GpsOptions simulatedPath(List<LatLng> simulatedPath) {
+		this.simulatedPath = simulatedPath;
+		return this;
+	}
+	
+	public List<LatLng> simulatedPath() {
+		return simulatedPath;
 	}
 }

@@ -18,17 +18,23 @@ public abstract class AbstractSimulatedGps extends AbstractGps {
 	
 	protected Position currentPosition;
 	protected List<LatLng> currentPath;
+	protected List<LatLng> customPath;
 	
 	private Object currentPathLock = new Object(); 
 	
 	public AbstractSimulatedGps(GpsOptions options, LatLng location) {
 		super(options);
+		customPath = options.simulatedPath();
 		currentPosition = new Position(location, 0, System.currentTimeMillis());
 	}
-	
+
 	public void followPath(List<LatLng> path) {
 		synchronized (currentPathLock) {
-			currentPath = path;
+			if (customPath == null) {
+				currentPath = path;
+			} else {
+				currentPath = customPath;
+			}
 		}
 		doFollowPath();
 	}
