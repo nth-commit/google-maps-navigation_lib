@@ -31,16 +31,12 @@ public class DefaultNavigatorStateListener implements INavigatorStateListener {
 
 	@Override
 	public void OnDeparture(NavigationState state) {
-		FragmentTransaction ft = parentActivity.getFragmentManager().beginTransaction();
-		ft.add(R.id.directions_overlay_container, directionsOverlayFragment);
-		ft.commit();
+		addDirectionsOverlay();
 	}
 
 	@Override
 	public void OnArrival(NavigationState state) {
-		FragmentTransaction ft = parentActivity.getFragmentManager().beginTransaction();
-		ft.remove(directionsOverlayFragment);
-		ft.commit();
+		removeDirectionsOverlay();
 	}
 
 	@Override
@@ -62,6 +58,18 @@ public class DefaultNavigatorStateListener implements INavigatorStateListener {
 	
 	public void OnNavigatorTick(NavigationState state) {
 		currentDirectionFragment.setDirectionDistance(state.getDistanceToCurrentDirection());
+	}
+	
+	private void addDirectionsOverlay() {
+		FragmentTransaction ft = parentActivity.getFragmentManager().beginTransaction();
+		ft.add(R.id.directions_overlay_container, directionsOverlayFragment);
+		ft.commit();
+	}
+	
+	private void removeDirectionsOverlay() {
+		FragmentTransaction ft = parentActivity.getFragmentManager().beginTransaction();
+		ft.remove(directionsOverlayFragment);
+		ft.commit();
 	}
 
 }

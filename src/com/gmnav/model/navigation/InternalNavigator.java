@@ -25,7 +25,7 @@ public class InternalNavigator {
 	private final int MIN_ARRIVAL_DIST_METERS = 10;
 	private final int OFF_PATH_TOLERANCE_METERS = 10;
 	private final int OFF_PATH_TOLERANCE_BEARING = 45;
-	private final int MAX_TIME_OFF_PATH_MS = 5000;
+	private final int MAX_TIME_OFF_PATH_MS = 3000;
 	
 	private NavigationMap map;
 	private Vehicle vehicle;
@@ -35,6 +35,8 @@ public class InternalNavigator {
 	private NavigationState navigationState;
 	private NavigationState lastNavigationState;
 	private LatLng destination;
+	
+	private final Object navigatingLock = new Object();
 	
 	public InternalNavigator(NavigationFragment navigationFragment, final IGps gps, NavigationMap map, VehicleOptions vehicleMarkerOptions) {
 		this.gps = gps;
@@ -58,71 +60,92 @@ public class InternalNavigator {
 		navigatorStateListener = stateListener;
 	}
 
-	public void go(final LatLng location) {		
+	public void go(final LatLng location) {
+		boolean wasNavigating = false;
+		synchronized (navigatingLock) {
+			wasNavigating = isNavigating();
+			if (wasNavigating) {
+				stop();
+			}
+		}
+		
+		final boolean finalWasNavigating = wasNavigating;
 		Route request = new Route(position.location, location);
 		request.getDirections(new DirectionsRetrieved() {
 			@Override
 			public void invoke(Directions directions) {
-				destination = location;
 				navigatorStateListener.OnNewPathFound(directions);
-				startNavigation(directions);
+				if (finalWasNavigating) {
+					redirectNavigation(directions, location);
+				} else {
+					beginNavigation(directions, location);
+				}
 			}
 		});
 	}
 	
 	public void stop() {
-		if (gps instanceof AbstractSimulatedGps) {
-			((AbstractSimulatedGps)gps).clearPath();
+		synchronized (navigatingLock) {
+			destination = null;
+			navigationState = null;
+			lastNavigationState = null;
+			map.setMapMode(MapMode.FREE);
+			map.removePolylinePath();
 		}
-		
-		destination = null;
-		navigationState = null;
-		lastNavigationState = null;
-		map.setMapMode(MapMode.FREE);
-		map.removePolylinePath();
 	}
 	
 	public boolean isNavigating() {
-		return navigationState != null;
+		synchronized (navigatingLock) {
+			return navigationState != null;
+		}
 	}
 	
 	public LatLng getDestination() {
-		return destination;
+		synchronized (navigatingLock) {
+			return destination;
+		}
 	}
 	
-	private void startNavigation(Directions directions) {
-		if (!isNavigating()) {
-			navigationState = new NavigationState(directions);
-			map.addPathPolyline(directions.getLatLngPath());
+	private void beginNavigation(Directions directions, LatLng location) {
+		synchronized (navigatingLock) {
+			redirectNavigation(directions, location);
 			map.setMapMode(MapMode.FOLLOW);
-			
 			if (gps instanceof AbstractSimulatedGps) {
 				((AbstractSimulatedGps)gps).followPath(directions.getLatLngPath());
 			}
-			
 			navigatorStateListener.OnDeparture(navigationState);
 		}
 	}
 	
+	private void redirectNavigation(Directions directions, LatLng location) {
+		synchronized (navigatingLock) {
+			navigationState = new NavigationState(directions);
+			destination = location;
+			map.addPathPolyline(directions.getLatLngPath());
+		}
+	}
+	
 	private void onGpsTick(Position position) {
-		this.position = position;
-		if (isNavigating()) {
-			try {
-				navigationState.update(position);
-			} catch (InvalidObjectException e) {
-				e.printStackTrace();
-				Log.e("Fatal exception in Navigator", e.getMessage());
+		synchronized (navigatingLock) {
+			this.position = position;
+			if (isNavigating()) {
+				try {
+					navigationState.update(position);
+				} catch (InvalidObjectException e) {
+					e.printStackTrace();
+					Log.e("Fatal exception in Navigator", e.getMessage());
+				}
+				checkArrival();
+				checkDirectionChanged();
+				checkOffPath();
+				tickNavigator();
 			}
-			checkArrival();
-			checkDirectionChanged();
-			checkOffPath();
-			tickNavigator();
 		}
 		updateVehicleMarker();
 	}
 	
 	private void checkArrival() {
-		if (LatLngUtil.distanceInMeters(navigationState.getLocation(), destination) <= MIN_ARRIVAL_DIST_METERS) {
+		if (LatLngUtil.distanceInMeters(navigationState.getLocation(), destination) <= MIN_ARRIVAL_DIST_METERS) {	
 			navigatorStateListener.OnArrival(navigationState);
 			stop();
 		}
@@ -148,16 +171,17 @@ public class InternalNavigator {
 	}
 	
 	private void checkOffPath() {
-		if (!isNavigating()) {
+		if (!isNavigating() || !navigationState.isOnPath()) {
 			return;
 		}
 		
 		if (navigationState.getDistanceOffPath() > OFF_PATH_TOLERANCE_METERS ||
 				navigationState.getBearingDifferenceFromPath() > OFF_PATH_TOLERANCE_BEARING) {
 			
-			if (lastNavigationState != null && lastNavigationState.isOnPath()) {
+			if (lastNavigationState != null && !lastNavigationState.isHeadingOffPath()) {
+				navigationState.signalHeadingOffPath();
+			} else if (navigationState.getTime() - navigationState.getHeadingOffPathStartTime() > MAX_TIME_OFF_PATH_MS) {
 				navigationState.signalOffPath();
-			} else if (navigationState.getTime() - navigationState.getOffPathStartTime() > MAX_TIME_OFF_PATH_MS) {
 				navigatorStateListener.OnVehicleOffPath(navigationState);
 			}
 		} else {

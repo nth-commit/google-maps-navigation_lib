@@ -23,14 +23,16 @@ public class NavigationState {
 	private Point currentPoint;
 	private double distanceToNextPoint;
 	private double progressAlongSegment;
+	private boolean isHeadingOffPath;
 	private boolean isOnPath;
-	private long offPathStartTime;
+	private long headingOffPathStartTime;
 	private boolean isSnapshot;
 	
 	public NavigationState(Directions directions) {
 		path = directions.getPath();
 		currentIndex = 0;
 		currentPoint = path.get(0);
+		isHeadingOffPath = false;
 		isOnPath = true;
 		isSnapshot = false;
 	}
@@ -42,8 +44,9 @@ public class NavigationState {
 		distanceOffPath = navigationStateSnapshot.getDistanceOffPath();
 		bearingDifferenceFromPath = navigationStateSnapshot.getBearingDifferenceFromPath();
 		currentPoint = navigationStateSnapshot.getCurrentPoint();
+		isHeadingOffPath = navigationStateSnapshot.isHeadingOffPath();
 		isOnPath = navigationStateSnapshot.isOnPath();
-		offPathStartTime = navigationStateSnapshot.getOffPathStartTime();
+		headingOffPathStartTime = navigationStateSnapshot.getHeadingOffPathStartTime();
 		isSnapshot = true;
 	}
 	
@@ -99,6 +102,10 @@ public class NavigationState {
 		return bearingDifferenceFromPath;
 	}
 	
+	public boolean isHeadingOffPath() {
+		return isHeadingOffPath;
+	}
+	
 	public boolean isOnPath() {
 		return isOnPath;
 	}
@@ -107,13 +114,17 @@ public class NavigationState {
 		isOnPath = true;
 	}
 	
+	public void signalHeadingOffPath() {
+		headingOffPathStartTime = position.timestamp;
+		isHeadingOffPath = true;
+	}
+	
 	public void signalOffPath() {
-		offPathStartTime = position.timestamp;
 		isOnPath = false;
 	}
 	
-	public long getOffPathStartTime() {
-		return offPathStartTime;
+	public long getHeadingOffPathStartTime() {
+		return headingOffPathStartTime;
 	}
 	
 	public double getDistanceToCurrentDirection() {
