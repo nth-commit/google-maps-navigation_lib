@@ -1,5 +1,7 @@
 package com.gmnav.model.util;
 
+import android.location.Location;
+
 import com.gmnav.model.LatLng;
 
 public class LatLngUtil {
@@ -103,4 +105,8 @@ public class LatLngUtil {
     	
     	return new LatLng(a.latitude + abLat * t, a.longitude + abLng * t);    	
     }
+    
+    public static LatLng toLatLng(Location location) {
+		return new LatLng(location.getLatitude(), location.getLongitude());
+	}
 }

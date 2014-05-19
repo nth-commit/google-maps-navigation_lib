@@ -11,16 +11,14 @@ import com.gmnav.NavigationFragment;
 import com.gmnav.R;
 import com.gmnav.model.LatLng;
 import com.gmnav.model.PointD;
-import com.gmnav.model.map.AbstractMap;
 import com.gmnav.model.map.IMap;
 import com.gmnav.model.map.PolylineOptions;
-import com.gmnav.model.util.LayoutUtil;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.CancelableCallback;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Polyline;
 
@@ -46,6 +44,13 @@ public class GoogleMapWrapper implements IMap {
 		
 		googleMap = mapFragment.getMap();
 		cameraPositionFactory = new CameraPositionFactory(googleMap);
+		initialiseMapUiSettings(googleMap.getUiSettings());
+	}
+	
+	private void initialiseMapUiSettings(UiSettings mapUiSettings) {
+		mapUiSettings.setZoomControlsEnabled(false);
+		mapUiSettings.setCompassEnabled(false);
+		mapUiSettings.setRotateGesturesEnabled(false);
 	}
 
 	@Override

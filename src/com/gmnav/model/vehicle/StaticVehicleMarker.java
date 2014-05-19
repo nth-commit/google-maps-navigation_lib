@@ -15,13 +15,10 @@ import com.gmnav.model.map.IMap;
 import com.gmnav.model.map.IMap.OnUpdate;
 import com.gmnav.model.map.NavigationMap;
 import com.gmnav.model.util.LayoutUtil;
-import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
-import com.google.android.gms.maps.model.CameraPosition;
 
 public class StaticVehicleMarker implements IVehicleMarker {
 	
 	private Vehicle vehicle;
-	private NavigationMap navigationMap;
 	private IMap map;
 	private ImageView markerImageView;
 	private Bitmap image;
@@ -30,7 +27,6 @@ public class StaticVehicleMarker implements IVehicleMarker {
 	
 	public StaticVehicleMarker(NavigationFragment navigationFragment, Vehicle vehicle, NavigationMap navigationMap) {
 		this.vehicle = vehicle;
-		this.navigationMap = navigationMap;
 		map = navigationMap.getMap();
 
 		ViewGroup view = (ViewGroup)navigationFragment.getView();

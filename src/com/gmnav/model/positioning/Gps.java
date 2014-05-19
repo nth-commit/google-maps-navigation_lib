@@ -3,7 +3,7 @@ package com.gmnav.model.positioning;
 import android.location.Location;
 
 import com.gmnav.Defaults;
-import com.gmnav.model.util.GoogleUtil;
+import com.gmnav.model.util.LatLngUtil;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
@@ -45,7 +45,7 @@ public class Gps extends AbstractGps implements LocationListener {
 
 	@Override
 	public void onLocationChanged(final Location loc) {
-		onTickHandler.invoke(new Position(GoogleUtil.toLatLng(loc), loc
+		onTickHandler.invoke(new Position(LatLngUtil.toLatLng(loc), loc
 				.hasBearing() ? loc.getBearing() : 0, System
 				.currentTimeMillis()));
 	}
@@ -53,6 +53,6 @@ public class Gps extends AbstractGps implements LocationListener {
 	@Override
 	public LatLng getLastLocation() {
 		Location loc = locationClient.getLastLocation();
-		return loc == null ? Defaults.LOCATION : GoogleUtil.toLatLng(loc);
+		return loc == null ? Defaults.LOCATION : LatLngUtil.toLatLng(loc);
 	}
 }

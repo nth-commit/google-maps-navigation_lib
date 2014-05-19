@@ -14,7 +14,6 @@ import com.gmnav.model.directions.Direction;
 import com.gmnav.model.directions.Directions;
 import com.gmnav.model.directions.IDirectionsFactory;
 import com.gmnav.model.directions.Movement;
-import com.gmnav.model.util.GoogleUtil;
 import com.gmnav.model.LatLng;
 
 public class GoogleDirectionsFactory implements IDirectionsFactory {
