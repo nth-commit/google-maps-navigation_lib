@@ -3,7 +3,7 @@ package com.gmnav.model.navigation;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.android.gms.maps.model.LatLng;
+import com.gmnav.model.LatLng;
 
 /**
  * A lazy wrapper for the InternalNavigator class.

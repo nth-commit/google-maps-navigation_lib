@@ -1,7 +1,7 @@
 package com.gmnav.model.navigation;
 
 import com.gmnav.model.directions.Directions;
-import com.google.android.gms.maps.model.LatLng;
+import com.gmnav.model.LatLng;
 
 public interface INavigatorStateListener {
 	

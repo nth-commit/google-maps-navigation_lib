@@ -10,24 +10,28 @@ import android.widget.LinearLayout.LayoutParams;
 
 import com.gmnav.NavigationFragment;
 import com.gmnav.R;
+import com.gmnav.model.PointD;
+import com.gmnav.model.map.IMap;
+import com.gmnav.model.map.IMap.OnUpdate;
 import com.gmnav.model.map.NavigationMap;
 import com.gmnav.model.util.LayoutUtil;
-import com.gmnav.model.util.PointD;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.model.CameraPosition;
 
 public class StaticVehicleMarker implements IVehicleMarker {
 	
 	private Vehicle vehicle;
-	private NavigationMap map;
+	private NavigationMap navigationMap;
+	private IMap map;
 	private ImageView markerImageView;
 	private Bitmap image;
 	private boolean isVisible;
-	private float currentTilt = -1.0f;
+	private double currentTilt = -1.0f;
 	
-	public StaticVehicleMarker(NavigationFragment navigationFragment, Vehicle vehicle, NavigationMap map) {
+	public StaticVehicleMarker(NavigationFragment navigationFragment, Vehicle vehicle, NavigationMap navigationMap) {
 		this.vehicle = vehicle;
-		this.map = map;
+		this.navigationMap = navigationMap;
+		map = navigationMap.getMap();
 
 		ViewGroup view = (ViewGroup)navigationFragment.getView();
 		LinearLayout container = (LinearLayout)LayoutUtil.getChildViewById(view, R.id.static_vehicle_marker_container);
@@ -35,17 +39,17 @@ public class StaticVehicleMarker implements IVehicleMarker {
 		image = vehicle.getImage();
 		isVisible = markerImageView.getVisibility() == View.VISIBLE;
 		
-		map.getInnerMap().setOnCameraChangeListener(new OnCameraChangeListener() {
+		map.setOnUpdateEventHandler(new OnUpdate() {
 			@Override
-			public void onCameraChange(CameraPosition position) {
-				setLayoutParams(position);
+			public void invoke() {
+				setLayoutParams(map.getTilt());
 			}
 		});
 		updateLayoutParams();
 	}
 	
 	private void updateLayoutParams() {
-		setLayoutParams(map.getInnerMap().getCameraPosition());
+		setLayoutParams(map.getTilt());
 	}
 
 	@Override
@@ -65,10 +69,9 @@ public class StaticVehicleMarker implements IVehicleMarker {
 		}
 	}
 
-	private void setLayoutParams(CameraPosition position) {
-		float tilt = position.tilt;
+	private void setLayoutParams(double tilt) {
 		if (isVisible && tilt != currentTilt) {
-			final int imageHeight = (int)(image.getHeight() * Math.cos(Math.toRadians(position.tilt)));
+			final int imageHeight = (int)(image.getHeight() * Math.cos(Math.toRadians(tilt)));
 			final int imageWidth = image.getWidth();
 			final Bitmap flattenedImage = Bitmap.createScaledBitmap(image, imageWidth, imageHeight, true);
 			markerImageView.setImageBitmap(flattenedImage);

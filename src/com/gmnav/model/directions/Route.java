@@ -14,7 +14,7 @@ import android.util.Log;
 
 import com.gmnav.model.google.GoogleDirectionsFactory;
 import com.gmnav.model.util.AsyncTaskExecutor;
-import com.google.android.gms.maps.model.LatLng;
+import com.gmnav.model.LatLng;
 
 public class Route extends AsyncTask<Void, Void, String> {
 	

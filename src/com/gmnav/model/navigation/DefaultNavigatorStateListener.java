@@ -13,7 +13,7 @@ import com.gmnav.model.directions.Directions;
 import com.gmnav.model.directions.Point;
 import com.gmnav.model.util.AsyncTaskExecutor;
 import com.gmnav.model.util.LatLngUtil;
-import com.google.android.gms.maps.model.LatLng;
+import com.gmnav.model.LatLng;
 
 public class DefaultNavigatorStateListener implements INavigatorStateListener {
 	

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import com.gmnav.NavigationFragment;
+import com.gmnav.model.PointD;
 import com.gmnav.model.map.NavigationMap;
 import com.gmnav.model.map.NavigationMap.MapMode;
 import com.gmnav.model.map.NavigationMap.OnMapModeChangedListener;
@@ -13,8 +14,7 @@ import com.gmnav.model.util.LatLngUtil;
 import com.gmnav.model.util.ListUtil;
 import com.gmnav.model.util.ListUtil.Predicate;
 import com.gmnav.model.util.MathUtil;
-import com.gmnav.model.util.PointD;
-import com.google.android.gms.maps.model.LatLng;
+import com.gmnav.model.LatLng;
 
 public class Vehicle {
 	
@@ -30,7 +30,7 @@ public class Vehicle {
 	private LatLng location;
 	private double bearing;
 	
-	private LatLngVehicleMarker latLngMarker;
+	private ILatLngVehicleMarker latLngMarker;
 	private StaticVehicleMarker overlayMarker;
 	
 	private Object targetPositionsLock = new Object();
@@ -42,7 +42,7 @@ public class Vehicle {
 		screenAnchor = options.screenAnchor();
 		targetPositions = new ArrayList<Position>();
 		
-		latLngMarker = new LatLngVehicleMarker(this, map);
+		latLngMarker = options.latLngVehicleMarkerFactory().createLatLngVehicleMarker(this, map);
 		overlayMarker = new StaticVehicleMarker(navigationFragment, this, map);
 		listenForMapModeChange();
 		onMapModeChanged(map.getMapMode());

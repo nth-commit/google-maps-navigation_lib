@@ -1,7 +1,7 @@
-package com.gmnav.model.map;
+package com.gmnav.model.google;
 
-import com.google.android.gms.maps.model.LatLng;
-import com.gmnav.model.util.PointD;
+import com.gmnav.model.LatLng;
+import com.gmnav.model.PointD;
 
 public class SphericalMercatorProjection {
 	

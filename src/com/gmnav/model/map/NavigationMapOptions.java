@@ -1,8 +1,8 @@
 package com.gmnav.model.map;
 
 import com.gmnav.Defaults;
-import com.gmnav.model.util.PointD;
-import com.google.android.gms.maps.model.LatLng;
+import com.gmnav.model.LatLng;
+import com.gmnav.model.PointD;
 
 public class NavigationMapOptions {
 	

@@ -1,4 +1,4 @@
-package com.gmnav.model.util;
+package com.gmnav.model;
 
 public class PointD {
 	

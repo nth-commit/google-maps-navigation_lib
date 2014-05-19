@@ -1,20 +1,18 @@
-package com.gmnav.model.map;
+package com.gmnav.model.google;
+
+import com.gmnav.model.map.IMap.OnTouchEventHandler;
 
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-public class MapEventsListener extends View {
-	
-	public interface OnTouchEventHandler {
-		void invoke();
-	}
+public class GoogleMapEventsListener extends View {
 	
 	private OnTouchEventHandler handler;
 
-	public MapEventsListener(Context context, AttributeSet attrs) {
-		super(context, attrs);
+	public GoogleMapEventsListener(Context context) {
+		super(context);
 	}
 	
 	@Override

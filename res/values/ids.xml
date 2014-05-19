@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
     <item name="fragment_layout" type="id" />
+    
+    <item name="map_container" type="id" />
     <item name="map_fragment" type="id" />
     <item name="directions_fragment" type="id" />
     <item name="navigation_fragment" type="id" />

@@ -6,7 +6,7 @@ import com.gmnav.model.directions.Directions;
 import com.gmnav.model.directions.Point;
 import com.gmnav.model.positioning.Position;
 import com.gmnav.model.util.LatLngUtil;
-import com.google.android.gms.maps.model.LatLng;
+import com.gmnav.model.LatLng;
 
 public class NavigationState {
 	

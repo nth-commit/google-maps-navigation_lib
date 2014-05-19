@@ -5,7 +5,7 @@ import java.util.List;
 
 import android.location.Location;
 
-import com.google.android.gms.maps.model.LatLng;
+import com.gmnav.model.LatLng;
 
 public class GoogleUtil {
 	

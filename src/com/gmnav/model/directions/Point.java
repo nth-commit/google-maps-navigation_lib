@@ -1,6 +1,6 @@
 package com.gmnav.model.directions;
 
-import com.google.android.gms.maps.model.LatLng;
+import com.gmnav.model.LatLng;
 
 public class Point {
 	public LatLng location;

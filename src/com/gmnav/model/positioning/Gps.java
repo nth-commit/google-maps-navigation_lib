@@ -7,13 +7,13 @@ import com.gmnav.model.util.GoogleUtil;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.maps.model.LatLng;
+import com.gmnav.model.LatLng;
 
 public class Gps extends AbstractGps implements LocationListener {
-	
+
 	private LocationClient locationClient;
 	private boolean isTrackingEnabled = false;
-	
+
 	public Gps(GpsOptions options, LocationClient locationClient) {
 		super(options);
 		this.locationClient = locationClient;
@@ -37,17 +37,19 @@ public class Gps extends AbstractGps implements LocationListener {
 			isTrackingEnabled = false;
 		}
 	}
-	
+
 	@Override
 	public void forceTick() {
-		onLocationChanged(locationClient.getLastLocation());		
+		onLocationChanged(locationClient.getLastLocation());
 	}
-	
+
 	@Override
 	public void onLocationChanged(final Location loc) {
-		onTickHandler.invoke(new Position(GoogleUtil.toLatLng(loc), loc.hasBearing() ? loc.getBearing() : 0, System.currentTimeMillis()));
+		onTickHandler.invoke(new Position(GoogleUtil.toLatLng(loc), loc
+				.hasBearing() ? loc.getBearing() : 0, System
+				.currentTimeMillis()));
 	}
-	
+
 	@Override
 	public LatLng getLastLocation() {
 		Location loc = locationClient.getLastLocation();

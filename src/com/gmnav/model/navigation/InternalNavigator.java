@@ -17,7 +17,7 @@ import com.gmnav.model.positioning.IGps.OnTickHandler;
 import com.gmnav.model.util.LatLngUtil;
 import com.gmnav.model.vehicle.Vehicle;
 import com.gmnav.model.vehicle.VehicleOptions;
-import com.google.android.gms.maps.model.LatLng;
+import com.gmnav.model.LatLng;
 import android.util.Log;
 
 public class InternalNavigator {

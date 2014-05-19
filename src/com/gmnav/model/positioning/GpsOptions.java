@@ -3,7 +3,7 @@ package com.gmnav.model.positioning;
 import java.util.List;
 
 import com.gmnav.Defaults;
-import com.google.android.gms.maps.model.LatLng;
+import com.gmnav.model.LatLng;
 
 public class GpsOptions {
 	

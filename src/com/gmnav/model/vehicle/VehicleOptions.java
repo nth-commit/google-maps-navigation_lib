@@ -3,14 +3,16 @@ package com.gmnav.model.vehicle;
 import android.graphics.Bitmap;
 
 import com.gmnav.Defaults;
-import com.gmnav.model.util.PointD;
-import com.google.android.gms.maps.model.LatLng;
+import com.gmnav.model.PointD;
+import com.gmnav.model.LatLng;
 
 public class VehicleOptions {
+	
 	private LatLng location = Defaults.LOCATION;
 	private Bitmap image;
 	private PointD imageAnchor = new PointD(0.5, 0.5); // TODO: Implement me.
 	private PointD screenAnchor = new PointD(0.5d, 0.75d);
+	private ILatLngVehicleMarkerFactory latLngVehicleMarkerFactory;
 	
 	public VehicleOptions location(LatLng location) {
 		this.location = location;
@@ -37,5 +39,14 @@ public class VehicleOptions {
 	
 	public PointD screenAnchor() {
 		return screenAnchor;
+	}
+	
+	public VehicleOptions latLngVehicleMarkerFactory(ILatLngVehicleMarkerFactory latLngVehicleMarkerFactory) {
+		this.latLngVehicleMarkerFactory = latLngVehicleMarkerFactory;
+		return this;
+	}
+	
+	public ILatLngVehicleMarkerFactory latLngVehicleMarkerFactory() {
+		return latLngVehicleMarkerFactory;
 	}
 }

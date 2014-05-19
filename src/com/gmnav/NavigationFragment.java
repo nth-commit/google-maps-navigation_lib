@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.gmnav.R;
-import com.gmnav.model.map.MapEventsListener;
+import com.gmnav.model.google.GoogleMapWrapper;
 import com.gmnav.model.map.NavigationMap;
 import com.gmnav.model.navigation.DefaultNavigatorStateListener;
 import com.gmnav.model.navigation.INavigatorStateListener;
@@ -40,7 +40,7 @@ public class NavigationFragment extends Fragment implements
 	private InternalNavigator internalNavigator;
 	private Activity parent;
 	private LocationClient locationClient;
-	private NavigationMap map;
+	private NavigationMap navigationMap;
 	private IGps gps;
 	
 	private static List<NavigationOptions> optionsById = new ArrayList<NavigationOptions>();
@@ -69,9 +69,8 @@ public class NavigationFragment extends Fragment implements
 	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
-		MapFragment mapFragment = (MapFragment)getFragmentManager().findFragmentById(R.id.map_fragment);
-		MapEventsListener mapEventsListener = (MapEventsListener)getView().getRootView().findViewById(R.id.map_events_listener_view);
-		map = new NavigationMap(mapFragment, mapEventsListener, options.mapOptions());
+		GoogleMapWrapper map = new GoogleMapWrapper(this);
+		navigationMap = new NavigationMap(map, options.mapOptions());
 		
 		if (options.gpsOptions().gpsType() == GpsType.REAL) {
 			parent = getActivity();
@@ -114,7 +113,7 @@ public class NavigationFragment extends Fragment implements
 	}
 	
 	private void createNavigator() {
-		internalNavigator = new InternalNavigator(this, gps, map, options.vehicleOptions());
+		internalNavigator = new InternalNavigator(this, gps, navigationMap, options.vehicleOptions());
 		INavigatorStateListener stateListener = new DefaultNavigatorStateListener(this);
 		internalNavigator.setNavigatorStateListener(stateListener);
 		navigator.setInternalNavigator(internalNavigator);

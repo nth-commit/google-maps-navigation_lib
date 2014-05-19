@@ -3,7 +3,7 @@ package com.gmnav.model.directions;
 import java.util.ArrayList;
 import java.util.List;
 import com.gmnav.model.util.LatLngUtil;
-import com.google.android.gms.maps.model.LatLng;
+import com.gmnav.model.LatLng;
 
 public class Directions {
 	

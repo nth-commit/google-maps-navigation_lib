@@ -2,7 +2,7 @@ package com.gmnav.model.positioning;
 
 import android.os.AsyncTask;
 import com.gmnav.model.util.AsyncTaskExecutor;
-import com.google.android.gms.maps.model.LatLng;
+import com.gmnav.model.LatLng;
 
 public class SimulatedGps extends AbstractSimulatedGps {
 	

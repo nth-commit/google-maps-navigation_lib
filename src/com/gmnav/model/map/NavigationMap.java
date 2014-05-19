@@ -5,8 +5,9 @@ import java.util.List;
 import android.graphics.Point;
 import android.view.View;
 
-import com.gmnav.model.map.MapEventsListener.OnTouchEventHandler;
-import com.gmnav.model.util.PointD;
+import com.gmnav.model.LatLng;
+import com.gmnav.model.PointD;
+import com.gmnav.model.map.IMap.OnTouchEventHandler;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
@@ -14,9 +15,6 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
 import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
 
 public class NavigationMap {
 	
@@ -29,6 +27,7 @@ public class NavigationMap {
 		FREE
 	}
 	
+	private static final int FOLLOW_VEHICLE_ANIMATION_TIME = 1000;
 	private static final float NAVIGATING_TILT = 60;
 	private static final float NAVIGATING_ZOOM = 19;
 	private static final float IDLE_TILT = 0;
@@ -36,28 +35,23 @@ public class NavigationMap {
 	private static final float IDLE_ZOOM = 3;
 	
 	private MapFragment mapFragment;
-	private GoogleMap map;
-	private CameraPositionFactory cameraPositionFactory;
+	private IMap map;
 	private UiSettings mapUiSettings;
-	
 	private LatLng vehicleLocation;
-	private float vehicleBearing;
+	private double vehicleBearing;
 	private PointD anchor;
-	private Polyline polylinePath;
 	private MapMode mapMode;
 	
 	private OnMapModeChangedListener mapModeChangedListener;
 	
 	private boolean trackLocation = true;
 	
-	public NavigationMap(MapFragment mapFragment, MapEventsListener mapEventsListener, NavigationMapOptions options) {
-		this.mapFragment = mapFragment;
-		map = mapFragment.getMap();
-		cameraPositionFactory = new CameraPositionFactory(map);
+	public NavigationMap(IMap map, NavigationMapOptions options) {
 		vehicleLocation = options.location();
 		anchor = options.anchor();
+		this.map = map;
 		
-		mapEventsListener.setOnTouchEventHandler(new OnTouchEventHandler() {
+		map.setOnTouchEventHandler(new OnTouchEventHandler() {
 			@Override
 			public void invoke() {
 				setTrackLocationEnabled(false);
@@ -66,6 +60,12 @@ public class NavigationMap {
 				}
 			}
 		});
+	}
+	
+	public NavigationMap(MapFragment mapFragment, NavigationMapOptions options) {
+		this.mapFragment = mapFragment;
+		vehicleLocation = options.location();
+		anchor = options.anchor();
 		
 		initialiseUiSettings();
 		initialiseLocationButtonInteractions();
@@ -98,7 +98,7 @@ public class NavigationMap {
 		map.setMyLocationEnabled(!enabled);
 	}
 	
-	public GoogleMap getInnerMap() {
+	public IMap getMap() {
 		return map;
 	}
 	
@@ -106,16 +106,12 @@ public class NavigationMap {
 		mapModeChangedListener = listener;
 	}
 	
-	public Polyline addPathPolyline(List<LatLng> path) {
-		removePolylinePath();
-		polylinePath = map.addPolyline(new PolylineOptions().addAll(path).color(0xff3073F0));
-		return polylinePath;
+	public void addPathPolyline(List<LatLng> path) {
+		map.addPolyline(new PolylineOptions().path(path).color(0xff3073F0));
 	}
 	
 	public void removePolylinePath() {
-		if (polylinePath != null) {
-			polylinePath.remove();
-		}
+		map.removePolyline();
 	}
 	
 	public MapMode getMapMode() {
@@ -135,42 +131,20 @@ public class NavigationMap {
 	}
 	
 	private void setCameraPositionNavigatingDefault() {
-		CameraPosition defaultPosition = cameraPositionFactory.newCameraPosition(NAVIGATING_ZOOM, NAVIGATING_TILT, vehicleBearing);
-		map.moveCamera(CameraUpdateFactory.newCameraPosition(defaultPosition));
-	}
-	
-	private void setCameraPositionIdleDefault() {
-		CameraPosition defaultPosition = cameraPositionFactory.newCameraPosition(IDLE_ZOOM, IDLE_TILT, IDLE_BEARING);
-		map.moveCamera(CameraUpdateFactory.newCameraPosition(defaultPosition));
-	}
-	
-	public Point getSize() {
-		View mapView = mapFragment.getView();
-		return new Point(mapView.getMeasuredWidth(), mapView.getMeasuredHeight());
+		map.setZoom(NAVIGATING_ZOOM);
+		map.setTilt(NAVIGATING_TILT);
+		map.setBearing(vehicleBearing);
+		map.invalidate(FOLLOW_VEHICLE_ANIMATION_TIME);
 	}
 	
 	public void setVehiclePosition(LatLng location, double bearing) {
-		vehicleBearing = (float)bearing;
-		vehicleLocation = getOffsetLocation(location);
+		vehicleLocation = location;
+		vehicleBearing = bearing;
+		
 		if (trackLocation) {
-			map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPositionFactory.newCameraPosition(vehicleLocation, vehicleBearing)));
+			map.setLocation(location);
+			map.setBearing(bearing);
+			map.invalidate();
 		}
-	}
-	
-	private LatLng getOffsetLocation(LatLng location) {
-		Point size = getSize();
-		PointD anchorOffset = new PointD(size.x * (0.5 - anchor.x), size.y * (0.5 - anchor.y));
-		PointD screenCenterWorldXY = SphericalMercatorProjection.latLngToWorldXY(location, getZoom());
-		PointD newScreenCenterWorldXY = new PointD(screenCenterWorldXY.x + anchorOffset.x, screenCenterWorldXY.y + anchorOffset.y);
-		newScreenCenterWorldXY.rotate(screenCenterWorldXY, vehicleBearing);
-		return SphericalMercatorProjection.worldXYToLatLng(newScreenCenterWorldXY, getZoom());
-	}
-	
-	public float getZoom() {
-		return map.getCameraPosition().zoom;
-	}
-
-	public void setOnCameraChangeListener(OnCameraChangeListener listener) {
-		map.setOnCameraChangeListener(listener);
 	}
 }

@@ -1,6 +1,6 @@
 package com.gmnav.model.positioning;
 
-import com.google.android.gms.maps.model.LatLng;
+import com.gmnav.model.LatLng;
 
 public class Position {
 
