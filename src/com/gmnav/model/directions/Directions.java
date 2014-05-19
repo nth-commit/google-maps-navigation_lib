@@ -2,17 +2,12 @@ package com.gmnav.model.directions;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.gmnav.model.util.GoogleUtil;
 import com.gmnav.model.util.LatLngUtil;
 import com.google.android.gms.maps.model.LatLng;
 
 public class Directions {
 	
-	private ArrayList<Direction> directions;
+	private List<Direction> directions;
 	private ArrayList<Point> path;
 	private ArrayList<LatLng> latLngPath;
 	private String originAddress;
@@ -20,43 +15,35 @@ public class Directions {
 	private LatLng origin;
 	private LatLng destination;
 	
-	public Directions(LatLng origin, LatLng destination, JSONObject googleRoute) throws JSONException {
+	public Directions(LatLng origin, LatLng destination, List<Direction> directions) throws Exception {
+		this(origin, destination, null, null, directions);
+	}
+	
+	public Directions(LatLng origin, LatLng destination, String originAddress, String destinationAddress, List<Direction> directions) throws Exception {
 		this.origin = origin;
 		this.destination = destination;
-		JSONObject leg = googleRoute.getJSONArray("legs").getJSONObject(0); // Only one leg supported
-		originAddress = leg.getString("start_address");
-		destinationAddress = leg.getString("end_address");
-		createDirections(leg.getJSONArray("steps"));
+		this.originAddress = originAddress;
+		this.destinationAddress = destinationAddress;
+		this.directions = directions;
+		validateDirections();
 		createPath();
 		createLatLngPath();
 	}
 	
-	private void createDirections(JSONArray steps) throws JSONException {
-		directions = new ArrayList<Direction>();
-		
-		Direction previousDirection = null;
-		List<LatLng> nextDirectionPath = new ArrayList<LatLng>();
-		nextDirectionPath.add(origin);
-		int nextDirectionTime = 0;
-		int nextDirectionDistance = 0;
-		
-		for (int i = 0; i < steps.length(); i++) {
-			JSONObject googleStep = steps.getJSONObject(i);
-			String htmlText = googleStep.getString("html_instructions");
-			Direction currentDirection = i == 0 ? 
-					DirectionFactory.createDepartureDirection(nextDirectionPath, nextDirectionTime, nextDirectionDistance, htmlText) :
-						DirectionFactory.createTransitDirection(nextDirectionPath, nextDirectionTime, nextDirectionDistance, htmlText, previousDirection);
-			directions.add(currentDirection);
-			
-			nextDirectionPath = GoogleUtil.decodePolyline(googleStep.getJSONObject("polyline").getString("points"));
-			nextDirectionTime = googleStep.getJSONObject("duration").getInt("value");
-			nextDirectionDistance = googleStep.getJSONObject("distance").getInt("value");
-			previousDirection = currentDirection;
+	private void validateDirections() throws Exception {
+		int numberOfDirections = directions.size();
+		if (directions.get(0).getMovement() != Movement.DEPARTURE) {
+			throw new Exception("First Direction object must be Movement.DEPATURE");
 		}
-		
-		nextDirectionPath.add(destination);
-		Direction arrivalDirection = DirectionFactory.createArrivalDirection(nextDirectionPath, nextDirectionTime, nextDirectionDistance, destinationAddress, previousDirection);
-		directions.add(arrivalDirection);
+		if (directions.get(numberOfDirections - 1).getMovement() != Movement.ARRIVAL) {
+			throw new Exception("Last Direction object must be Movement.ARRIVAL");
+		}
+		for (int i = 1; i < numberOfDirections - 2; i++) {
+			Movement movement = directions.get(i).getMovement();
+			if (movement == Movement.ARRIVAL || movement == Movement.DEPARTURE) {
+				throw new Exception("Intermediate Direction objects must not be Movement.ARRIVAL or Movement.DEPARTUE");
+			}
+		}
 	}
 	
 	private void createPath() {
@@ -140,5 +127,21 @@ public class Directions {
 	
 	public List<LatLng> getLatLngPath() {
 		return latLngPath;
+	}
+	
+	public LatLng getOrigin() {
+		return origin;
+	}
+	
+	public LatLng getDestination() {
+		return destination;
+	}
+	
+	public String getOriginAddress() {
+		return originAddress;
+	}
+	
+	public String getDestinationAddress() {
+		return destinationAddress;
 	}
 }

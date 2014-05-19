@@ -12,6 +12,7 @@ import org.json.JSONObject;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.gmnav.model.google.GoogleDirectionsFactory;
 import com.gmnav.model.util.AsyncTaskExecutor;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -21,14 +22,14 @@ public class Route extends AsyncTask<Void, Void, String> {
 		void onSuccess(Directions directions, LatLng origin, LatLng destination);
 		void onFailure(String message, LatLng origin, LatLng destination);
 	}
-
-	private static final String GOOGLE_DIRECTIONS_URL = "http://maps.googleapis.com/maps/api/directions/json?";
 	
 	private LatLng origin;
 	private LatLng destination;
 	private DirectionsRetrieved directionsRetrieved;
+	private IDirectionsFactory directionsFactory;
 
 	public Route(LatLng origin, LatLng destination) {
+		directionsFactory = new GoogleDirectionsFactory();
 		this.origin = origin;
 		this.destination = destination;		
 	}
@@ -37,20 +38,13 @@ public class Route extends AsyncTask<Void, Void, String> {
 		this.directionsRetrieved = directionsRetrieved;
 		AsyncTaskExecutor.execute(this);
 	}
-	
-	private String getRequestUrl() {
-		String url = GOOGLE_DIRECTIONS_URL;
-		url += "origin=" + origin.latitude + "," + origin.longitude;
-		url += "&destination=" + destination.latitude + "," + destination.longitude;
-		url += "&sensor=false";
-		return url;
-	}
 
 	@Override
 	protected String doInBackground(Void... arg0) {
 		try {
 			HttpClient http = new DefaultHttpClient();
-			HttpResponse response = http.execute(new HttpGet(getRequestUrl()));
+			String url = directionsFactory.createRequestUrl(origin, destination);
+			HttpResponse response = http.execute(new HttpGet(url));
 			HttpEntity entity = response.getEntity();
 			return EntityUtils.toString(entity);
 		} catch (Exception ex) {
@@ -63,20 +57,13 @@ public class Route extends AsyncTask<Void, Void, String> {
 	}
 	
 	@Override
-	protected void onPostExecute(String directionsJson) {
+	protected void onPostExecute(String response) {
 		try {
-			JSONObject responseObject = new JSONObject(directionsJson);
-			if (responseObject.getString("status") == "OK") {
-				JSONObject route = responseObject.getJSONArray("routes").getJSONObject(0); // Only one route supported
-				directionsRetrieved.onSuccess(new Directions(origin, destination, route), origin, destination);
-			} else {
-				String message =  "Failed to find directions, response was: " + directionsJson;
-				Log.e("DefinedError", message);
-				directionsRetrieved.onFailure(message, origin, destination);
-			}
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Directions directions = directionsFactory.createDirections(origin, destination, response);
+			directionsRetrieved.onSuccess(directions, origin, destination);
+		} catch (Exception e) {
+			Log.e("DefinedError", e.getMessage());
+			directionsRetrieved.onFailure(e.getMessage(), origin, destination);
 		}
 	}
 }
