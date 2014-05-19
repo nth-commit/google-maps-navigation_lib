@@ -20,11 +20,10 @@ public class Directions {
 	private LatLng origin;
 	private LatLng destination;
 	
-	public Directions(LatLng origin, LatLng destination, String jsonString) throws JSONException {
+	public Directions(LatLng origin, LatLng destination, JSONObject googleRoute) throws JSONException {
 		this.origin = origin;
 		this.destination = destination;
-		JSONObject route = new JSONObject(jsonString).getJSONArray("routes").getJSONObject(0); // Only one route supported
-		JSONObject leg = route.getJSONArray("legs").getJSONObject(0); // Only one leg supported
+		JSONObject leg = googleRoute.getJSONArray("legs").getJSONObject(0); // Only one leg supported
 		originAddress = leg.getString("start_address");
 		destinationAddress = leg.getString("end_address");
 		createDirections(leg.getJSONArray("steps"));

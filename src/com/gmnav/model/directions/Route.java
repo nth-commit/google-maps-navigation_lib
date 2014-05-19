@@ -7,6 +7,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -17,9 +18,10 @@ import com.google.android.gms.maps.model.LatLng;
 public class Route extends AsyncTask<Void, Void, String> {
 	
 	public interface DirectionsRetrieved {
-		void invoke(Directions directions);
+		void onSuccess(Directions directions, LatLng origin, LatLng destination);
+		void onFailure(String message, LatLng origin, LatLng destination);
 	}
-	
+
 	private static final String GOOGLE_DIRECTIONS_URL = "http://maps.googleapis.com/maps/api/directions/json?";
 	
 	private LatLng origin;
@@ -52,7 +54,9 @@ public class Route extends AsyncTask<Void, Void, String> {
 			HttpEntity entity = response.getEntity();
 			return EntityUtils.toString(entity);
 		} catch (Exception ex) {
-			Log.e("Failed to retrieve directions", ex.getMessage());
+			String error = "Failed to retrieve directions with exception: " + ex.getMessage();
+			Log.e("DefinedError", error);
+			directionsRetrieved.onFailure(error, origin, destination);
 			ex.printStackTrace();
 		}
 		return null;
@@ -61,7 +65,15 @@ public class Route extends AsyncTask<Void, Void, String> {
 	@Override
 	protected void onPostExecute(String directionsJson) {
 		try {
-			this.directionsRetrieved.invoke(new Directions(origin, destination, directionsJson));
+			JSONObject responseObject = new JSONObject(directionsJson);
+			if (responseObject.getString("status") == "OK") {
+				JSONObject route = responseObject.getJSONArray("routes").getJSONObject(0); // Only one route supported
+				directionsRetrieved.onSuccess(new Directions(origin, destination, route), origin, destination);
+			} else {
+				String message =  "Failed to find directions, response was: " + directionsJson;
+				Log.e("DefinedError", message);
+				directionsRetrieved.onFailure(message, origin, destination);
+			}
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -66,6 +66,7 @@ public class InternalNavigator {
 			wasNavigating = isNavigating();
 			if (wasNavigating) {
 				stop();
+				destination = location;
 			}
 		}
 		
@@ -73,13 +74,18 @@ public class InternalNavigator {
 		Route request = new Route(position.location, location);
 		request.getDirections(new DirectionsRetrieved() {
 			@Override
-			public void invoke(Directions directions) {
-				navigatorStateListener.OnNewPathFound(directions);
+			public void onSuccess(Directions directions, LatLng origin, LatLng destination) {
+				navigatorStateListener.OnNewPathFound(directions, origin, destination);
 				if (finalWasNavigating) {
 					redirectNavigation(directions, location);
 				} else {
 					beginNavigation(directions, location);
 				}
+			}
+			
+			@Override
+			public void onFailure(String message, LatLng origin, LatLng destination) {
+				navigatorStateListener.OnNewPathFoundFailed(message, origin, destination);
 			}
 		});
 	}

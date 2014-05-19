@@ -2,6 +2,7 @@ package com.gmnav.model.navigation;
 
 import android.app.Activity;
 import android.app.FragmentTransaction;
+import android.os.AsyncTask;
 
 import com.gmnav.DirectionFragment;
 import com.gmnav.DirectionsOverlayFragment;
@@ -10,9 +11,13 @@ import com.gmnav.R;
 import com.gmnav.model.directions.Direction;
 import com.gmnav.model.directions.Directions;
 import com.gmnav.model.directions.Point;
+import com.gmnav.model.util.AsyncTaskExecutor;
 import com.gmnav.model.util.LatLngUtil;
+import com.google.android.gms.maps.model.LatLng;
 
 public class DefaultNavigatorStateListener implements INavigatorStateListener {
+	
+	private static final int DIRECTIONS_REREQUEST_BACKOFF_MS = 5000;
 	
 	private DirectionsOverlayFragment directionsOverlayFragment;
 	private DirectionFragment currentDirectionFragment;
@@ -26,7 +31,24 @@ public class DefaultNavigatorStateListener implements INavigatorStateListener {
 	}
 	
 	@Override
-	public void OnNewPathFound(Directions directions) {
+	public void OnNewPathFoundFailed(String message, LatLng origin, LatLng destination) {
+		AsyncTaskExecutor.execute(new AsyncTask<Void, Void, Void>() {
+			@Override
+			protected Void doInBackground(Void... params) {
+				try {
+					Thread.sleep(DIRECTIONS_REREQUEST_BACKOFF_MS);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				navigator.go(navigator.getDestination());
+				return null;
+			}
+			
+		});
+	}
+	
+	@Override
+	public void OnNewPathFound(Directions directions, LatLng origin, LatLng destination) {
 	}
 
 	@Override
