@@ -1,8 +1,9 @@
 package com.navidroidgms.model.vehiclemarker;
 
+import android.os.Handler;
+
 import com.navidroid.model.LatLng;
 import com.navidroid.model.map.NavigationMap;
-import com.navidroid.model.map.NavigationMap.MapMode;
 import com.navidroid.model.vehicle.IVehicleMarker;
 import com.navidroid.model.vehicle.Vehicle;
 import com.navidroidgms.Util;
@@ -16,10 +17,15 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public class VehicleMarker implements IVehicleMarker {
 	
+	// Animation gets cancelled if we start straight away, due to internal GestureDetector.onSingleTapConfirmed listener.
+	private final static int FOLLOW_VEHICLE_DELAY_MS = 500;
+	
 	private Marker marker;
 	private GoogleMapWrapper map;
+	private Handler handler;
 	
 	public VehicleMarker(final Vehicle vehicle, final NavigationMap navigationMap) {
+		handler = new Handler();
 		map = (GoogleMapWrapper)navigationMap.getMap();
 		map.whenGoogleMapReady(new WhenGoogleMapReadyCallback() {
 			@Override
@@ -34,9 +40,14 @@ public class VehicleMarker implements IVehicleMarker {
 				googleMap.setOnMarkerClickListener(new OnMarkerClickListener() {
 					@Override
 					public boolean onMarkerClick(Marker candidateMarker) {
-						// TODO: fix me!
 						if (candidateMarker.equals(marker)) {
-							navigationMap.followVehicle();
+							handler.postDelayed(new Runnable() {
+								@Override
+								public void run() {
+									navigationMap.followVehicle();
+								}
+							}, FOLLOW_VEHICLE_DELAY_MS);
+							return true;
 						}
 						return false;
 					}

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.graphics.Point;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -30,6 +31,8 @@ public class GoogleMapWrapper implements IMap {
 	public interface WhenGoogleMapReadyCallback {
 		void invoke(GoogleMap googleMap);
 	}
+	
+	private boolean isAnimating = false;
 	
 	private GoogleMapReadyCallbacks mapReadyCallbacks;
 	private MapFragment mapFragment;
@@ -77,14 +80,19 @@ public class GoogleMapWrapper implements IMap {
 		mapReadyCallbacks.whenMapReady(new WhenGoogleMapReadyCallback() {
 			@Override
 			public void invoke(GoogleMap googleMap) {
-				googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+				if (!isAnimating) {
+					Log.e("map invalidated", "no animation");
+					googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+				}
 			}
 		});
 	}
 	
 	@Override
 	public void invalidate(final int animationTime) {
-		invalidate(animationTime, null);
+		if (!isAnimating) {
+			invalidate(animationTime, null);
+		}
 	}
 	
 	@Override
@@ -92,21 +100,27 @@ public class GoogleMapWrapper implements IMap {
 		mapReadyCallbacks.whenMapReady(new WhenGoogleMapReadyCallback() {
 			@Override
 			public void invoke(GoogleMap googleMap) {
+				isAnimating = true;
+				
 				googleMap.animateCamera(
 						CameraUpdateFactory.newCameraPosition(cameraPosition),
 						animationTime,
 						new CancelableCallback() {
+							
 							@Override
 							public void onFinish() {
 								if (invalidationAnimationFinished != null) {
 									invalidationAnimationFinished.invoke();
 								}
+								isAnimating = false;
 							}
+							
 							@Override
 							public void onCancel() {
 								if (invalidationAnimationFinished != null) {
 									invalidationAnimationFinished.invoke();
 								}
+								isAnimating = false;
 							}
 						});
 			}
