@@ -118,9 +118,6 @@ public class GoogleMapWrapper implements IMap {
 								
 								@Override
 								public void onCancel() {
-									if (invalidationAnimationFinished != null) {
-										invalidationAnimationFinished.invoke();
-									}
 									isAnimating = false;
 								}
 							});
