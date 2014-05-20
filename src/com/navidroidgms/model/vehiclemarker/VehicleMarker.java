@@ -2,6 +2,7 @@ package com.navidroidgms.model.vehiclemarker;
 
 import com.navidroid.model.LatLng;
 import com.navidroid.model.map.NavigationMap;
+import com.navidroid.model.map.NavigationMap.MapMode;
 import com.navidroid.model.vehicle.IVehicleMarker;
 import com.navidroid.model.vehicle.Vehicle;
 import com.navidroidgms.Util;
@@ -34,8 +35,8 @@ public class VehicleMarker implements IVehicleMarker {
 					@Override
 					public boolean onMarkerClick(Marker candidateMarker) {
 						// TODO: fix me!
-						if (candidateMarker == marker) {
-							//map.setMapMode(MapMode.FOLLOW);
+						if (candidateMarker.equals(marker)) {
+							navigationMap.followVehicle();
 						}
 						return false;
 					}

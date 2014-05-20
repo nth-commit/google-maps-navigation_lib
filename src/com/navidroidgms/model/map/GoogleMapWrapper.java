@@ -49,7 +49,7 @@ public class GoogleMapWrapper implements IMap {
 	}
 	
 	private void initialiseEventsListener(NavigationFragment fragment) {
-		ViewGroup mapContainer = (ViewGroup)fragment.getActivity().findViewById(R.id.map_overlay_container);
+		ViewGroup mapContainer = (ViewGroup)fragment.getActivity().findViewById(R.id.navigation_fragment);
 		eventsListener = new MapEventsListener(mapContainer.getContext());
 		mapContainer.addView(eventsListener);
 	}
@@ -84,6 +84,11 @@ public class GoogleMapWrapper implements IMap {
 	
 	@Override
 	public void invalidate(final int animationTime) {
+		invalidate(animationTime, null);
+	}
+	
+	@Override
+	public void invalidate(final int animationTime, final OnInvalidationAnimationFinished invalidationAnimationFinished) {
 		mapReadyCallbacks.whenMapReady(new WhenGoogleMapReadyCallback() {
 			@Override
 			public void invoke(GoogleMap googleMap) {
@@ -92,9 +97,17 @@ public class GoogleMapWrapper implements IMap {
 						animationTime,
 						new CancelableCallback() {
 							@Override
-							public void onFinish() { }
+							public void onFinish() {
+								if (invalidationAnimationFinished != null) {
+									invalidationAnimationFinished.invoke();
+								}
+							}
 							@Override
-							public void onCancel() { }
+							public void onCancel() {
+								if (invalidationAnimationFinished != null) {
+									invalidationAnimationFinished.invoke();
+								}
+							}
 						});
 			}
 		});
