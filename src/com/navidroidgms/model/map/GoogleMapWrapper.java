@@ -37,7 +37,6 @@ public class GoogleMapWrapper implements IMap {
 	private GoogleMapReadyCallbacks mapReadyCallbacks;
 	private MapFragment mapFragment;
 	private MapEventsListener eventsListener;
-	private CameraPositionFactory cameraPositionFactory;
 	private CameraPosition cameraPosition;
 	private PointD anchor;
 	private Polyline polyline;
@@ -48,7 +47,6 @@ public class GoogleMapWrapper implements IMap {
 		mapReadyCallbacks = new GoogleMapReadyCallbacks();
 		initialiseEventsListener(fragment);
 		initialiseGoogleMap(fragment);
-		cameraPositionFactory = new CameraPositionFactory();
 	}
 	
 	private void initialiseEventsListener(NavigationFragment fragment) {
@@ -81,7 +79,6 @@ public class GoogleMapWrapper implements IMap {
 			@Override
 			public void invoke(GoogleMap googleMap) {
 				if (!isAnimating) {
-					Log.e("map invalidated", "no animation");
 					googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 				}
 			}
@@ -100,29 +97,34 @@ public class GoogleMapWrapper implements IMap {
 		mapReadyCallbacks.whenMapReady(new WhenGoogleMapReadyCallback() {
 			@Override
 			public void invoke(GoogleMap googleMap) {
-				isAnimating = true;
-				
-				googleMap.animateCamera(
-						CameraUpdateFactory.newCameraPosition(cameraPosition),
-						animationTime,
-						new CancelableCallback() {
-							
-							@Override
-							public void onFinish() {
-								if (invalidationAnimationFinished != null) {
-									invalidationAnimationFinished.invoke();
+				if (CameraPositionUtil.equals(cameraPosition, googleMap.getCameraPosition())) {
+					if (invalidationAnimationFinished != null) {
+						invalidationAnimationFinished.invoke();
+					}
+				} else {
+					isAnimating = true;
+					googleMap.animateCamera(
+							CameraUpdateFactory.newCameraPosition(cameraPosition),
+							animationTime,
+							new CancelableCallback() {
+								
+								@Override
+								public void onFinish() {
+									if (invalidationAnimationFinished != null) {
+										invalidationAnimationFinished.invoke();
+									}
+									isAnimating = false;
 								}
-								isAnimating = false;
-							}
-							
-							@Override
-							public void onCancel() {
-								if (invalidationAnimationFinished != null) {
-									invalidationAnimationFinished.invoke();
+								
+								@Override
+								public void onCancel() {
+									if (invalidationAnimationFinished != null) {
+										invalidationAnimationFinished.invoke();
+									}
+									isAnimating = false;
 								}
-								isAnimating = false;
-							}
-						});
+							});
+				}
 			}
 		});
 	}
@@ -133,22 +135,22 @@ public class GoogleMapWrapper implements IMap {
 
 	@Override
 	public void setLocation(LatLng location) {
-		cameraPosition = cameraPositionFactory.newCameraPosition(cameraPosition, Util.toGoogleLatLng(getOffsetLocation(location)));
+		cameraPosition = CameraPositionUtil.newCameraPosition(cameraPosition, Util.toGoogleLatLng(getOffsetLocation(location)));
 	}
 
 	@Override
 	public void setBearing(double bearing) {
-		cameraPosition = cameraPositionFactory.newCameraPositionFromBearing(cameraPosition, (float)bearing);
+		cameraPosition = CameraPositionUtil.newCameraPositionFromBearing(cameraPosition, (float)bearing);
 	}
 
 	@Override
 	public void setTilt(double tilt) {
-		cameraPosition = cameraPositionFactory.newCameraPositionFromTilt(cameraPosition, (float)tilt);
+		cameraPosition = CameraPositionUtil.newCameraPositionFromTilt(cameraPosition, (float)tilt);
 	}
 
 	@Override
 	public void setZoom(double zoom) {
-		cameraPosition = cameraPositionFactory.newCameraPositionFromZoom(cameraPosition, (float)zoom);
+		cameraPosition = CameraPositionUtil.newCameraPositionFromZoom(cameraPosition, (float)zoom);
 	}
 	
 	@Override
