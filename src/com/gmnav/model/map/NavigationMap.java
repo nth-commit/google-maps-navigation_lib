@@ -3,10 +3,7 @@ package com.gmnav.model.map;
 import java.util.List;
 
 import com.gmnav.model.LatLng;
-import com.gmnav.model.PointD;
 import com.gmnav.model.map.IMap.OnTouchEventHandler;
-import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.UiSettings;
 
 public class NavigationMap {
 	
@@ -26,16 +23,14 @@ public class NavigationMap {
 	private IMap map;
 	private LatLng vehicleLocation;
 	private double vehicleBearing;
-	private PointD anchor;
 	private MapMode mapMode;
 	
 	private OnMapModeChangedListener mapModeChangedListener;
 	
 	private boolean trackLocation = true;
 	
-	public NavigationMap(IMap map, NavigationMapOptions options) {
+	public NavigationMap(IMap map, MapOptions options) {
 		vehicleLocation = options.location();
-		anchor = options.anchor();
 		this.map = map;
 		
 		map.setOnTouchEventHandler(new OnTouchEventHandler() {

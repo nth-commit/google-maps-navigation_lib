@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.gmnav.R;
-import com.gmnav.model.google.GoogleMapWrapper;
+import com.gmnav.model.map.IMap;
 import com.gmnav.model.map.NavigationMap;
 import com.gmnav.model.navigation.DefaultNavigatorStateListener;
 import com.gmnav.model.navigation.INavigatorStateListener;
@@ -14,6 +14,7 @@ import com.gmnav.model.navigation.Navigator;
 import com.gmnav.model.positioning.GpsFactory;
 import com.gmnav.model.positioning.IGps;
 import com.gmnav.model.positioning.GpsOptions.GpsType;
+import com.gmnav.model.vehicle.Vehicle;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
 import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
@@ -40,6 +41,7 @@ public class NavigationFragment extends Fragment implements
 	private Activity parent;
 	private LocationClient locationClient;
 	private NavigationMap navigationMap;
+	private Vehicle vehicle;
 	private IGps gps;
 	
 	private static List<NavigationOptions> optionsById = new ArrayList<NavigationOptions>();
@@ -68,7 +70,7 @@ public class NavigationFragment extends Fragment implements
 	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
-		GoogleMapWrapper map = new GoogleMapWrapper(this);
+		IMap map = options.mapOptions().mapFactory().createMap(this);
 		navigationMap = new NavigationMap(map, options.mapOptions());
 		
 		if (options.gpsOptions().gpsType() == GpsType.REAL) {
@@ -112,7 +114,8 @@ public class NavigationFragment extends Fragment implements
 	}
 	
 	private void createNavigator() {
-		internalNavigator = new InternalNavigator(this, gps, navigationMap, options.vehicleOptions());
+		vehicle = new Vehicle(this, navigationMap, options.vehicleOptions().location(gps.getLastLocation()));
+		internalNavigator = new InternalNavigator(this, gps, navigationMap, vehicle, options.directionsFactory());
 		INavigatorStateListener stateListener = new DefaultNavigatorStateListener(this);
 		internalNavigator.setNavigatorStateListener(stateListener);
 		navigator.setInternalNavigator(internalNavigator);

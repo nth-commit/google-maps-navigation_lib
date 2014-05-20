@@ -25,15 +25,14 @@
 	    		android:visibility="invisible" />  
     	</LinearLayout>
     	
-    	
     	<LinearLayout
     	    android:id="@+id/directions_overlay_container"
     	    android:layout_width="match_parent"
     		android:layout_height="match_parent" />
     	
-    	<com.gmnav.model.google.MapEventsListener
-    	    android:id="@+id/map_events_listener_view"
+    	<LinearLayout
     	    android:layout_width="match_parent"
-	        android:layout_height="match_parent" />
-    
+    		android:layout_height="match_parent"
+    		android:id="@+id/map_overlay_container" />
+
 </FrameLayout>

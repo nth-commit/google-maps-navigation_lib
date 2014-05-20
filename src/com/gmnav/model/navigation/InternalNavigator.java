@@ -5,6 +5,7 @@ import java.io.InvalidObjectException;
 import com.gmnav.NavigationFragment;
 import com.gmnav.model.directions.Direction;
 import com.gmnav.model.directions.Directions;
+import com.gmnav.model.directions.IDirectionsFactory;
 import com.gmnav.model.directions.Point;
 import com.gmnav.model.directions.Route;
 import com.gmnav.model.directions.Route.DirectionsRetrieved;
@@ -30,6 +31,7 @@ public class InternalNavigator {
 	private NavigationMap map;
 	private Vehicle vehicle;
 	private IGps gps;
+	private IDirectionsFactory directionsFactory;
 	private INavigatorStateListener navigatorStateListener;
 	private Position position;
 	private NavigationState navigationState;
@@ -38,10 +40,11 @@ public class InternalNavigator {
 	
 	private final Object navigatingLock = new Object();
 	
-	public InternalNavigator(NavigationFragment navigationFragment, final IGps gps, NavigationMap map, VehicleOptions vehicleMarkerOptions) {
+	public InternalNavigator(NavigationFragment navigationFragment, IGps gps, NavigationMap map, Vehicle vehicle, IDirectionsFactory directionsFactory) {
 		this.gps = gps;
 		this.map = map;
-		this.vehicle = new Vehicle(navigationFragment, map, vehicleMarkerOptions.location(gps.getLastLocation()));
+		this.vehicle = vehicle;
+		this.directionsFactory = directionsFactory;
 		listenToGps();
 	}
 	
@@ -71,7 +74,7 @@ public class InternalNavigator {
 		}
 		
 		final boolean finalWasNavigating = wasNavigating;
-		Route request = new Route(position.location, location);
+		Route request = new Route(position.location, location, directionsFactory);
 		request.getDirections(new DirectionsRetrieved() {
 			@Override
 			public void onSuccess(Directions directions, LatLng origin, LatLng destination) {

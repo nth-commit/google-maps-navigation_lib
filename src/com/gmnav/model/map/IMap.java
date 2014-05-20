@@ -24,7 +24,7 @@ public interface IMap {
 	public void setZoom(double zoom);
 	
 	public void setAnchor(PointD anchor);
-	
+
 	public void setOnTouchEventHandler(OnTouchEventHandler handler);
 	
 	public void setOnUpdateEventHandler(OnUpdate handler);

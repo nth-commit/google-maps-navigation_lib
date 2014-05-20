@@ -1,14 +1,16 @@
 package com.gmnav.model.navigation;
 
-import com.gmnav.model.map.NavigationMapOptions;
 import com.gmnav.model.positioning.GpsOptions;
 import com.gmnav.model.vehicle.VehicleOptions;
+import com.gmnav.model.directions.IDirectionsFactory;
+import com.gmnav.model.map.MapOptions;
 
 public class NavigationOptions {
 	
 	private VehicleOptions vehicleOptions = new VehicleOptions();
-	private NavigationMapOptions mapOptions = new NavigationMapOptions();
+	private MapOptions mapOptions = new MapOptions();
 	private GpsOptions gpsOptions = new GpsOptions();
+	private IDirectionsFactory directionsFactory;
 	
 	public NavigationOptions vehicleOptions(VehicleOptions options) {
 		vehicleOptions = options;
@@ -19,12 +21,12 @@ public class NavigationOptions {
 		return vehicleOptions;
 	}
 	
-	public NavigationOptions mapOptions(NavigationMapOptions options) {
+	public NavigationOptions mapOptions(MapOptions options) {
 		mapOptions = options;
 		return this;
 	}
 	
-	public NavigationMapOptions mapOptions() {
+	public MapOptions mapOptions() {
 		return mapOptions;
 	}
 	
@@ -35,5 +37,14 @@ public class NavigationOptions {
 	
 	public GpsOptions gpsOptions() {
 		return gpsOptions;
+	}
+	
+	public NavigationOptions directionsFactory(IDirectionsFactory directionsFactory) {
+		this.directionsFactory = directionsFactory;
+		return this;
+	}
+	
+	public IDirectionsFactory directionsFactory() {
+		return directionsFactory;
 	}
 }

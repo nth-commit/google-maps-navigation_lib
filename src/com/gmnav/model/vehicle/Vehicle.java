@@ -24,7 +24,7 @@ public class Vehicle {
 	
 	private Bitmap image;
 	private PointD screenAnchor;
-	private NavigationMap map;
+	private NavigationMap navigationMap;
 	
 	private ArrayList<Position> targetPositions;
 	private LatLng location;
@@ -35,17 +35,17 @@ public class Vehicle {
 	
 	private Object targetPositionsLock = new Object();
 		
-	public Vehicle(NavigationFragment navigationFragment, NavigationMap map, VehicleOptions options) {
-		this.map = map;
+	public Vehicle(NavigationFragment navigationFragment, NavigationMap navigationMap, VehicleOptions options) {
+		this.navigationMap = navigationMap;
 		location = options.location();
 		image = options.image();
-		screenAnchor = options.screenAnchor();
+		setScreenAnchor(options.screenAnchor());
 		targetPositions = new ArrayList<Position>();
 		
-		latLngMarker = options.latLngVehicleMarkerFactory().createLatLngVehicleMarker(this, map);
-		overlayMarker = new StaticVehicleMarker(navigationFragment, this, map);
+		latLngMarker = options.latLngVehicleMarkerFactory().createLatLngVehicleMarker(this, navigationMap);
+		overlayMarker = new StaticVehicleMarker(navigationFragment, this, navigationMap);
 		listenForMapModeChange();
-		onMapModeChanged(map.getMapMode());
+		onMapModeChanged(navigationMap.getMapMode());
 		
 		startUpdateTask();
 	}
@@ -75,7 +75,7 @@ public class Vehicle {
 			
 			@Override
 			protected void onProgressUpdate(Void... values) {
-				map.setVehiclePosition(location, bearing);
+				navigationMap.setVehiclePosition(location, bearing);
 				latLngMarker.setBearing(bearing);
 				latLngMarker.setLocation(location);
 			}
@@ -85,7 +85,7 @@ public class Vehicle {
 	}
 	
 	private void listenForMapModeChange() {
-		map.setOnMapModeChangedListener(new OnMapModeChangedListener() {
+		navigationMap.setOnMapModeChangedListener(new OnMapModeChangedListener() {
 			@Override
 			public void invoke(MapMode mode) {
 				onMapModeChanged(mode);			
@@ -164,6 +164,11 @@ public class Vehicle {
 	
 	public Bitmap getImage() {
 		return image;
+	}
+	
+	public void setScreenAnchor(PointD screenAnchor) {
+		this.screenAnchor = screenAnchor;
+		navigationMap.getMap().setAnchor(screenAnchor);
 	}
 	
 	public PointD getScreenAnchor() {

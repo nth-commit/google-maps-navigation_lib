@@ -10,7 +10,6 @@ import org.apache.http.util.EntityUtils;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.gmnav.model.google.GoogleDirectionsFactory;
 import com.gmnav.model.util.AsyncTaskExecutor;
 import com.gmnav.model.LatLng;
 
@@ -26,8 +25,8 @@ public class Route extends AsyncTask<Void, Void, String> {
 	private DirectionsRetrieved directionsRetrieved;
 	private IDirectionsFactory directionsFactory;
 
-	public Route(LatLng origin, LatLng destination) {
-		directionsFactory = new GoogleDirectionsFactory();
+	public Route(LatLng origin, LatLng destination, IDirectionsFactory directionsFactory) {
+		this.directionsFactory = directionsFactory;
 		this.origin = origin;
 		this.destination = destination;		
 	}
