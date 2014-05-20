@@ -36,6 +36,7 @@ public class NavigationMap {
 		map.setOnTouchEventHandler(new OnTouchEventHandler() {
 			@Override
 			public void invoke() {
+				trackLocation = false;
 				if (mapMode != MapMode.FREE) {
 					setMapMode(MapMode.FREE);
 				}
