@@ -202,7 +202,7 @@ public class GoogleMapWrapper implements IMap {
 	
 	public Point getSize() {
 		View mapView = mapFragment.getView();
-		return new Point(mapView.getMeasuredWidth(), mapView.getMeasuredHeight());
+		return mapView == null ? new Point(0, 0) : new Point(mapView.getMeasuredWidth(), mapView.getMeasuredHeight());
 	}
 	
 	private LatLng getOffsetLocation(LatLng location) {

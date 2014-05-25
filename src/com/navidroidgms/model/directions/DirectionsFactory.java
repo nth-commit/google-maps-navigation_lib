@@ -130,7 +130,7 @@ public class DirectionsFactory implements IDirectionsFactory {
 		String[] significantInfo = parseHtmlTextForSignificantInfo(htmlText);
 		Movement movement = getMovementType(htmlText, significantInfo);
 		String current = previousDirection.getTarget();
-		String target = movement == Movement.CONTINUE ? significantInfo[0] : significantInfo[1];
+		String target = significantInfo.length == 1 ? null : movement == Movement.CONTINUE ? significantInfo[0] : significantInfo[1];
 		return new Direction(path, timeSeconds, distanceMeters, text, current, target, movement);
 	}
 	
