@@ -110,31 +110,33 @@ public class DirectionsFactory implements IDirectionsFactory {
 	}
 	
 	private Direction createDepartureDirection(List<LatLng> path, int timeSeconds, int distanceMeters, String htmlText) {
-		String text = getTextFromHtmlText(htmlText);
+		String description = getDescriptionFromHtmlText(htmlText);
 		String[] significantInfo = parseHtmlTextForSignificantInfo(htmlText);
 		String current = significantInfo[1];
 		String target = significantInfo[2];
 		Movement movement = Movement.DEPARTURE;
-		return new Direction(path, timeSeconds, distanceMeters, text, current, target, movement);
+		return new Direction(path, timeSeconds, distanceMeters, description, current, target, movement);
 	}
 	
 	private Direction createArrivalDirection(List<LatLng> path, int timeSeconds, int distanceMeters, String destinationAddress, Direction previousDirection) {
-		String text = "You have reached your destination.";
+		String description = "";
 		String current = previousDirection.getTarget();
 		Movement movement = Movement.ARRIVAL;
-		return new Direction(path, timeSeconds, distanceMeters, text, current, destinationAddress, movement);
+		return new Direction(path, timeSeconds, distanceMeters, description, current, destinationAddress, movement);
 	}
 	
 	private Direction createTransitDirection(List<LatLng> path, int timeSeconds, int distanceMeters, String htmlText, Direction previousDirection) {
-		String text = getTextFromHtmlText(htmlText);
+		String description = getDescriptionFromHtmlText(htmlText).toLowerCase(Locale.US);
+		String[] splitByDestination = description.split("destination");
+		description = splitByDestination[0];
 		String[] significantInfo = parseHtmlTextForSignificantInfo(htmlText);
 		Movement movement = getMovementType(htmlText, significantInfo);
 		String current = previousDirection.getTarget();
 		String target = significantInfo.length == 1 ? null : movement == Movement.CONTINUE ? significantInfo[0] : significantInfo[1];
-		return new Direction(path, timeSeconds, distanceMeters, text, current, target, movement);
+		return new Direction(path, timeSeconds, distanceMeters, description, current, target, movement);
 	}
 	
-	private String getTextFromHtmlText(String htmlText) {
+	private String getDescriptionFromHtmlText(String htmlText) {
 		return Html.fromHtml(htmlText).toString();
 	}
 
