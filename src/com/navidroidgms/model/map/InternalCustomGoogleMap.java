@@ -221,4 +221,9 @@ public class InternalCustomGoogleMap implements ICustomGoogleMap {
 	public void setOnMarkerClickListener(OnMarkerClickListener listener) {
 		googleMap.setOnMarkerClickListener(listener);
 	}
+
+	@Override
+	public void addView(View view) {
+		((ViewGroup)mapFragment.getView()).addView(view);
+	}
 }

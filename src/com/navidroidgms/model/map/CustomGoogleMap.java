@@ -1,6 +1,7 @@
 package com.navidroidgms.model.map;
 
 import android.graphics.Point;
+import android.view.View;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
@@ -223,8 +224,6 @@ public class CustomGoogleMap extends WhenReadyWrapper<ICustomGoogleMap> implemen
 			}
 		});
 	}
-	
-	
 
 	@Override
 	public void setOnMarkerClickListener(final OnMarkerClickListener listener) {
@@ -232,6 +231,16 @@ public class CustomGoogleMap extends WhenReadyWrapper<ICustomGoogleMap> implemen
 			@Override
 			public void invoke(ICustomGoogleMap object) {
 				object.setOnMarkerClickListener(listener);
+			}
+		});
+	}
+
+	@Override
+	public void addView(final View view) {
+		whenReady(new WhenReady<ICustomGoogleMap>() {
+			@Override
+			public void invoke(ICustomGoogleMap object) {
+				object.addView(view);
 			}
 		});
 	}
