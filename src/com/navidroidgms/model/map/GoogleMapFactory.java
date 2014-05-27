@@ -8,7 +8,10 @@ public class GoogleMapFactory implements IMapFactory {
 
 	@Override
 	public IMap createMap(NavigationFragment fragment) {
-		return new GoogleMapWrapper(fragment);
+		CustomGoogleMap wrapper = new CustomGoogleMap();
+		@SuppressWarnings("unused")
+		InternalCustomGoogleMap customGoogleMap = new InternalCustomGoogleMap(fragment, wrapper);
+		return wrapper;
 	}
-
+	
 }

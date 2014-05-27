@@ -11,7 +11,7 @@ import com.google.android.gms.maps.MapFragment;
 public class NotifyingMapFragment extends MapFragment {
 	
 	public interface WhenMapReady {
-		void invoke(GoogleMap map);
+		void invoke(NotifyingMapFragment fragment);
 	}
 	
 	private static List<WhenMapReady> mapReadyCallbacksById = new ArrayList<WhenMapReady>();
@@ -38,7 +38,7 @@ public class NotifyingMapFragment extends MapFragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		whenMapReady.invoke(getMap());
+		whenMapReady.invoke(this);
 	}
 
 }

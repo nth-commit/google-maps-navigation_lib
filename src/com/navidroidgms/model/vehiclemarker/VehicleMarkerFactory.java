@@ -9,7 +9,10 @@ public class VehicleMarkerFactory implements IVehicleMarkerFactory {
 
 	@Override
 	public IVehicleMarker createVehicleMarker(Vehicle vehicle, NavigationMap navigationMap) {
-		return new VehicleMarker(vehicle, navigationMap);
+		VehicleMarker wrapper = new VehicleMarker();		
+		@SuppressWarnings("unused")
+		InternalVehicleMarker internalVehicleMarker = new InternalVehicleMarker(vehicle, navigationMap, wrapper);
+		return wrapper;
 	}
 
 }
