@@ -226,4 +226,9 @@ public class InternalCustomGoogleMap implements ICustomGoogleMap {
 	public void addView(View view) {
 		((ViewGroup)mapFragment.getView()).addView(view);
 	}
+	
+	@Override
+	public void setPadding(int left, int top, int right, int bottom) {
+		googleMap.setPadding(left, top, right, bottom);
+	}
 }

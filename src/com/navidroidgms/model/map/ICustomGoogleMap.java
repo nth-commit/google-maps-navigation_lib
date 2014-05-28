@@ -21,4 +21,6 @@ public interface ICustomGoogleMap extends IMap {
 	public void setOnMarkerClickListener(OnMarkerClickListener listener);
 	
 	public void addView(View view);
+	
+	public void setPadding(int left, int top, int right, int bottom);
 }

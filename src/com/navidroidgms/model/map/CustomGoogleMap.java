@@ -244,4 +244,14 @@ public class CustomGoogleMap extends WhenReadyWrapper<ICustomGoogleMap> implemen
 			}
 		});
 	}
+
+	@Override
+	public void setPadding(final int left, final int top, final int right, final int bottom) {
+		whenReady(new WhenReady<ICustomGoogleMap>() {
+			@Override
+			public void invoke(ICustomGoogleMap object) {
+				object.setPadding(left, top, right, bottom);
+			}
+		});
+	}
 }
