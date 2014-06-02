@@ -112,17 +112,15 @@ public class DirectionsFactory implements IDirectionsFactory {
 	private Direction createDepartureDirection(List<LatLng> path, int timeSeconds, int distanceMeters, String htmlText) {
 		String description = getDescriptionFromHtmlText(htmlText);
 		String[] significantInfo = parseHtmlTextForSignificantInfo(htmlText);
-		String current = significantInfo[1];
+		String current = significantInfo[2];
 		String target = significantInfo[2];
-		Movement movement = Movement.DEPARTURE;
-		return new Direction(path, timeSeconds, distanceMeters, description, current, target, movement);
+		return new Direction(path, timeSeconds, distanceMeters, description, current, target);
 	}
 	
 	private Direction createArrivalDirection(List<LatLng> path, int timeSeconds, int distanceMeters, String destinationAddress, Direction previousDirection) {
 		String description = "";
 		String current = previousDirection.getTarget();
-		Movement movement = Movement.ARRIVAL;
-		return new Direction(path, timeSeconds, distanceMeters, description, current, destinationAddress, movement);
+		return new Direction(path, timeSeconds, distanceMeters, description, current, destinationAddress);
 	}
 	
 	private Direction createTransitDirection(List<LatLng> path, int timeSeconds, int distanceMeters, String htmlText, Direction previousDirection) {
@@ -130,10 +128,9 @@ public class DirectionsFactory implements IDirectionsFactory {
 		String[] splitByDestination = description.split("destination");
 		description = splitByDestination[0];
 		String[] significantInfo = parseHtmlTextForSignificantInfo(htmlText);
-		Movement movement = getMovementType(htmlText, significantInfo);
 		String current = previousDirection.getTarget();
-		String target = significantInfo.length == 1 ? null : movement == Movement.CONTINUE ? significantInfo[0] : significantInfo[1];
-		return new Direction(path, timeSeconds, distanceMeters, description, current, target, movement);
+		String target = significantInfo.length == 1 ? significantInfo[0] : significantInfo[1];
+		return new Direction(path, timeSeconds, distanceMeters, description, current, target);
 	}
 	
 	private String getDescriptionFromHtmlText(String htmlText) {
