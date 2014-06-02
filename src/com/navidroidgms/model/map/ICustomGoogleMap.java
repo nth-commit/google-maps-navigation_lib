@@ -14,8 +14,6 @@ public interface ICustomGoogleMap extends IMap {
 		public void invoke(Marker marker);
 	}
 	
-	public GoogleMap getGoogleMap();
-	
 	public void addMarker(MarkerOptions options, OnMarkerCreated onMarkerCreated);
 	
 	public void setOnMarkerClickListener(OnMarkerClickListener listener);

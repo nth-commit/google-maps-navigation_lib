@@ -206,16 +206,6 @@ public class CustomGoogleMap extends WhenReadyWrapper<ICustomGoogleMap> implemen
 	}
 
 	@Override
-	public GoogleMap getGoogleMap() {
-		return whenReadyReturn(new WhenReadyReturn<ICustomGoogleMap, GoogleMap>() {
-			@Override
-			public GoogleMap invoke(ICustomGoogleMap object) {
-				return object.getGoogleMap();
-			}
-		}, null);
-	}
-
-	@Override
 	public void addMarker(final MarkerOptions options, final OnMarkerCreated onMarkerCreated) {
 		whenReady(new WhenReady<ICustomGoogleMap>() {
 			@Override

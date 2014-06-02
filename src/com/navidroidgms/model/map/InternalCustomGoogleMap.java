@@ -36,6 +36,10 @@ public class InternalCustomGoogleMap implements ICustomGoogleMap {
 	private CameraPosition cameraPosition;
 	private PointD anchor;
 	private Polyline polyline;
+	private int paddingLeft;
+	private int paddingTop;
+	private int paddingRight;
+	private int paddingBottom;
 	
 	public InternalCustomGoogleMap(NavigationFragment fragment, final CustomGoogleMap wrapper) {
 		cameraPosition = new CameraPosition(Util.toGoogleLatLng(new LatLng(0, 0)), 0, 0, 0);
@@ -128,7 +132,9 @@ public class InternalCustomGoogleMap implements ICustomGoogleMap {
 	@Override
 	public Point getSize() {
 		View mapView = mapFragment.getView();
-		return mapView == null ? new Point(0, 0) : new Point(mapView.getMeasuredWidth(), mapView.getMeasuredHeight());
+		return mapView == null ? new Point(0, 0) :
+			new Point(mapView.getMeasuredWidth() + paddingLeft - paddingRight,
+					mapView.getMeasuredHeight() + paddingTop - paddingBottom);
 	}
 
 	@Override
@@ -196,12 +202,6 @@ public class InternalCustomGoogleMap implements ICustomGoogleMap {
 			polyline = null;
 		}
 	}
-
-	@Override
-	public GoogleMap getGoogleMap() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 	
 	private LatLng getOffsetLocation(LatLng location) {
 		Point size = getSize();
@@ -229,6 +229,10 @@ public class InternalCustomGoogleMap implements ICustomGoogleMap {
 	
 	@Override
 	public void setPadding(int left, int top, int right, int bottom) {
+		paddingLeft = left;
+		paddingTop = top;
+		paddingRight = right;
+		paddingBottom = bottom;
 		googleMap.setPadding(left, top, right, bottom);
 	}
 }
