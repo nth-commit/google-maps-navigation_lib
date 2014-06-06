@@ -133,8 +133,7 @@ public class InternalCustomGoogleMap implements ICustomGoogleMap {
 	public Point getSize() {
 		View mapView = mapFragment.getView();
 		return mapView == null ? new Point(0, 0) :
-			new Point(mapView.getMeasuredWidth() + paddingLeft - paddingRight,
-					mapView.getMeasuredHeight() + paddingTop - paddingBottom);
+			new Point(mapView.getMeasuredWidth(), mapView.getMeasuredHeight());
 	}
 
 	@Override
@@ -205,7 +204,7 @@ public class InternalCustomGoogleMap implements ICustomGoogleMap {
 	
 	private LatLng getOffsetLocation(LatLng location) {
 		Point size = getSize();
-		PointD anchorOffset = new PointD(size.x * (0.5 - anchor.x), size.y * (0.5 - anchor.y));
+		PointD anchorOffset = new PointD(size.x * (0.5 - anchor.x) + (paddingLeft - paddingRight) / 2, size.y * (0.5 - anchor.y) + (paddingTop - paddingBottom) / 2);
 		PointD screenCenterWorldXY = SphericalMercatorProjection.latLngToWorldXY(location, getZoom());
 		PointD newScreenCenterWorldXY = new PointD(screenCenterWorldXY.x + anchorOffset.x, screenCenterWorldXY.y + anchorOffset.y);
 		newScreenCenterWorldXY.rotate(screenCenterWorldXY, cameraPosition.bearing);
