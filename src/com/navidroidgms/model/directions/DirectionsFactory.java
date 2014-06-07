@@ -112,9 +112,8 @@ public class DirectionsFactory implements IDirectionsFactory {
 	private Direction createDepartureDirection(List<LatLng> path, int timeSeconds, int distanceMeters, String htmlText) {
 		String description = getDescriptionFromHtmlText(htmlText);
 		String[] significantInfo = parseHtmlTextForSignificantInfo(htmlText);
-		String current = significantInfo[2];
-		String target = significantInfo[2];
-		return new Direction(path, timeSeconds, distanceMeters, description, current, target);
+		String target = significantInfo[1];
+		return new Direction(path, timeSeconds, distanceMeters, description, null, target);
 	}
 	
 	private Direction createArrivalDirection(List<LatLng> path, int timeSeconds, int distanceMeters, String destinationAddress, Direction previousDirection) {
@@ -130,6 +129,9 @@ public class DirectionsFactory implements IDirectionsFactory {
 		String[] significantInfo = parseHtmlTextForSignificantInfo(htmlText);
 		String current = previousDirection.getTarget();
 		String target = significantInfo.length == 1 ? significantInfo[0] : significantInfo[1];
+		if (isStringDirectionPrompt(target)) {
+			target = "?";
+		}
 		return new Direction(path, timeSeconds, distanceMeters, description, current, target);
 	}
 	
@@ -149,14 +151,16 @@ public class DirectionsFactory implements IDirectionsFactory {
 		return null;
 	}
 	
-	private Movement getMovementType(String htmlText, String[] significantInfo) {
-		if (htmlText.toLowerCase(Locale.US).startsWith("continue")) {
-			return Movement.CONTINUE;
-		} else if (significantInfo[0].toLowerCase(Locale.US).equals("left")) {
-			return Movement.TURN_LEFT;
-		} else if (significantInfo[0].toLowerCase(Locale.US).equals("right")) {
-			return Movement.TURN_RIGHT;
+	private boolean isStringDirectionPrompt(String value) {
+		String lowerCaseValue = value.toLowerCase(Locale.US);
+		if (lowerCaseValue.equals("right") ||
+			lowerCaseValue.equals("left") ||
+			lowerCaseValue.equals("north") ||
+			lowerCaseValue.equals("east") ||
+			lowerCaseValue.equals("south") ||
+			lowerCaseValue.equals("west")) {
+			return true;
 		}
-		return Movement.UNKNOWN;
+		return false;
 	}
 }
