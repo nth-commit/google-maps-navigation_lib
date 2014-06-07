@@ -146,7 +146,7 @@ public class DirectionsFactory implements IDirectionsFactory {
 	private Direction createDepartureDirection(List<LatLng> path, int timeSeconds, int distanceMeters, String htmlText) {
 		String description = getDescriptionFromHtmlText(htmlText);
 		String[] significantInfo = parseHtmlTextForSignificantInfo(htmlText);
-		String target = significantInfo[1];
+		String target = getTargetStreet(significantInfo);
 		return new Direction(path, timeSeconds, distanceMeters, description, null, target);
 	}
 	
@@ -162,10 +162,7 @@ public class DirectionsFactory implements IDirectionsFactory {
 		description = splitByDestination[0];
 		String[] significantInfo = parseHtmlTextForSignificantInfo(htmlText);
 		String current = previousDirection.getTarget();
-		String target = significantInfo.length == 1 ? significantInfo[0] : significantInfo[1];
-		if (isStringDirectionPrompt(target)) {
-			target = "?";
-		}
+		String target = getTargetStreet(significantInfo);
 		return new Direction(path, timeSeconds, distanceMeters, description, current, target);
 	}
 	
@@ -185,6 +182,15 @@ public class DirectionsFactory implements IDirectionsFactory {
 		return null;
 	}
 	
+	private String getTargetStreet(String[] significantInfo) {
+		String target = significantInfo.length == 1 ? significantInfo[0] : significantInfo[1];
+		if (isStringDirectionPrompt(target)) {
+			return "?";
+		}
+		target = formatAcronyms(target);
+		return target;
+	}
+	
 	private boolean isStringDirectionPrompt(String value) {
 		String lowerCaseValue = value.toLowerCase(Locale.US);
 		if (lowerCaseValue.equals("right") ||
@@ -196,5 +202,43 @@ public class DirectionsFactory implements IDirectionsFactory {
 			return true;
 		}
 		return false;
+	}
+	
+	private String formatAcronyms(String target) {
+		String[] targetParts = target.split(" ");
+		String newTargetString = "";
+		for (int i = 0; i < targetParts.length; i++) {
+			String part = targetParts[i];
+			if (isUpperCase(part)) {
+				part = splitStringWithPeriod(part);
+			}
+			newTargetString += part;
+			
+			if (i < targetParts.length - 1) {
+				newTargetString += " ";
+			}
+		}
+		return newTargetString;
+	}
+	
+	private boolean isUpperCase(String value) {
+		for (int i = 0; i < value.length(); i++) {
+			if (Character.isLetter(value.charAt(i))) {
+				return false;
+			}
+		}
+		String upperCaseValue = new String(value).toUpperCase(Locale.US);
+		return upperCaseValue.equals(value);
+	}
+	
+	private String splitStringWithPeriod(String value) {
+		String newValue = "";
+		for (int j = 0; j < value.length(); j++) {
+			newValue += value.charAt(j);
+			if (j < value.length() - 1) {
+				newValue += ".";
+			}
+		}
+		return newValue;
 	}
 }
