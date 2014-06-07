@@ -21,10 +21,13 @@ public class DirectionsFactory implements IDirectionsFactory {
 	private static final String GOOGLE_DIRECTIONS_URL = "http://maps.googleapis.com/maps/api/directions/json?";
 
 	@Override
-	public String createRequestUrl(LatLng origin, LatLng destination) {
+	public String createRequestUrl(LatLng origin, LatLng destination, LatLng rerouteWaypoint) {
 		String url = GOOGLE_DIRECTIONS_URL;
 		url += "origin=" + origin.latitude + "," + origin.longitude;
 		url += "&destination=" + destination.latitude + "," + destination.longitude;
+		if (rerouteWaypoint != null) {
+			url += "&waypoints=" + rerouteWaypoint.latitude + "," + rerouteWaypoint.longitude;
+		}
 		url += "&sensor=false";
 		return url;
 	}
@@ -41,14 +44,45 @@ public class DirectionsFactory implements IDirectionsFactory {
 	
 	private Directions createDirections(LatLng origin, LatLng destination, JSONObject responseObject) throws Exception {
 		JSONObject route = responseObject.getJSONArray("routes").getJSONObject(0); // Only one route supported
-		JSONObject leg = route.getJSONArray("legs").getJSONObject(0); // Only one leg supported
-		String originAddress = leg.getString("start_address");
-		String destinationAddress = leg.getString("end_address");
-		List<Direction> directions = createDirectionsList(origin, destination, destinationAddress, leg.getJSONArray("steps"));
+		JSONArray legs = route.getJSONArray("legs");
+		String originAddress = getOriginAddress(legs);
+		String destinationAddress = getDestinationAddress(legs);
+		List<JSONObject> steps = getSteps(legs);
+		List<Direction> directions = createDirectionsList(origin, destination, destinationAddress, steps);
 		return new Directions(origin, destination, originAddress, destinationAddress, directions);
 	}
+
+	private String getOriginAddress(JSONArray legs) throws JSONException {
+		return legs.getJSONObject(0).getString("start_address");
+	}
 	
-	private List<Direction> createDirectionsList(LatLng origin, LatLng destination, String destinationAddress, JSONArray steps) throws JSONException {
+	private String getDestinationAddress(JSONArray legs) throws JSONException {
+		return legs.getJSONObject(legs.length() - 1).getString("end_address");
+	}
+	
+	private List<JSONObject> getSteps(JSONArray legs) throws JSONException {
+		ArrayList<JSONObject> steps = new ArrayList<JSONObject>();
+		int numberOfLegs = legs.length();
+		for (int i = 0; i < numberOfLegs; i++) {
+			JSONArray currentSteps = legs.getJSONObject(i).getJSONArray("steps");
+			int numberOfSteps = currentSteps.length();
+			
+			if (i == 0) {
+				steps.add(currentSteps.getJSONObject(0));
+			}
+			
+			for (int j = 1; j < numberOfSteps - 1; j++) {
+				steps.add(currentSteps.getJSONObject(j));
+			}
+			
+			if (i == numberOfLegs - 1) {
+				steps.add(currentSteps.getJSONObject(numberOfSteps - 1));
+			}
+		}
+		return steps;
+	}
+	
+	private List<Direction> createDirectionsList(LatLng origin, LatLng destination, String destinationAddress, List<JSONObject> steps) throws JSONException {
 		List<Direction> directions = new ArrayList<Direction>();
 		Direction previousDirection = null;
 		List<LatLng> nextDirectionPath = new ArrayList<LatLng>();
@@ -56,8 +90,8 @@ public class DirectionsFactory implements IDirectionsFactory {
 		int nextDirectionTime = 0;
 		int nextDirectionDistance = 0;
 		
-		for (int i = 0; i < steps.length(); i++) {
-			JSONObject googleStep = steps.getJSONObject(i);
+		for (int i = 0; i < steps.size(); i++) {
+			JSONObject googleStep = steps.get(i);
 			String htmlText = googleStep.getString("html_instructions");
 			Direction currentDirection = i == 0 ? 
 					createDepartureDirection(nextDirectionPath, nextDirectionTime, nextDirectionDistance, htmlText) :
