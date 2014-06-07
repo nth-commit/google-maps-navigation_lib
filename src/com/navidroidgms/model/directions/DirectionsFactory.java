@@ -1,5 +1,6 @@
 package com.navidroidgms.model.directions;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -13,7 +14,6 @@ import android.text.Html;
 import com.navidroid.model.directions.Direction;
 import com.navidroid.model.directions.Directions;
 import com.navidroid.model.directions.IDirectionsFactory;
-import com.navidroid.model.directions.Movement;
 import com.navidroid.model.LatLng;
 
 public class DirectionsFactory implements IDirectionsFactory {
@@ -21,15 +21,23 @@ public class DirectionsFactory implements IDirectionsFactory {
 	private static final String GOOGLE_DIRECTIONS_URL = "http://maps.googleapis.com/maps/api/directions/json?";
 
 	@Override
-	public String createRequestUrl(LatLng origin, LatLng destination, LatLng rerouteWaypoint) {
-		String url = GOOGLE_DIRECTIONS_URL;
-		url += "origin=" + origin.latitude + "," + origin.longitude;
-		url += "&destination=" + destination.latitude + "," + destination.longitude;
+	public String createRequestUrl(LatLng origin, LatLng destination, LatLng rerouteWaypoint) throws Exception {
+		return GOOGLE_DIRECTIONS_URL + getQueryStringWithoutDestination(origin, rerouteWaypoint) + "&destination=" + destination.latitude + "," + destination.longitude;
+	}
+	
+	@Override
+	public String createRequestUrl(LatLng origin, String destinationAddress, LatLng rerouteWaypoint) throws Exception {
+		return GOOGLE_DIRECTIONS_URL + getQueryStringWithoutDestination(origin, rerouteWaypoint) + "&destination=" + URLEncoder.encode(destinationAddress, "utf-8");
+	}
+	
+	private String getQueryStringWithoutDestination(LatLng origin, LatLng rerouteWaypoint) {
+		String queryString = "";
+		queryString += "origin=" + origin.latitude + "," + origin.longitude;
 		if (rerouteWaypoint != null) {
-			url += "&waypoints=" + rerouteWaypoint.latitude + "," + rerouteWaypoint.longitude;
+			queryString += "&waypoints=" + rerouteWaypoint.latitude + "," + rerouteWaypoint.longitude;
 		}
-		url += "&sensor=false";
-		return url;
+		queryString += "&sensor=false";
+		return queryString;
 	}
 
 	@Override
@@ -61,6 +69,7 @@ public class DirectionsFactory implements IDirectionsFactory {
 	}
 	
 	private List<JSONObject> getSteps(JSONArray legs) throws JSONException {
+		// TODO: still need all the points of the steps we exclude
 		ArrayList<JSONObject> steps = new ArrayList<JSONObject>();
 		int numberOfLegs = legs.length();
 		for (int i = 0; i < numberOfLegs; i++) {
