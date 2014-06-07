@@ -3,9 +3,7 @@ package com.navidroidgms.model.map;
 import android.graphics.Point;
 import android.view.View;
 
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.navidroid.model.LatLng;
 import com.navidroid.model.PointD;
@@ -76,21 +74,21 @@ public class CustomGoogleMap extends WhenReadyWrapper<ICustomGoogleMap> implemen
 	}
 
 	@Override
-	public void setOnTouchEventHandler(final OnTouchEventHandler handler) {
+	public void setOnTouchListener(final OnTouchListener listener) {
 		whenReady(new WhenReady<ICustomGoogleMap>() {
 			@Override
 			public void invoke(ICustomGoogleMap object) {
-				object.setOnTouchEventHandler(handler);
+				object.setOnTouchListener(listener);
 			}
 		});
 	}
 
 	@Override
-	public void setOnUpdateEventHandler(final OnUpdate handler) {
+	public void setOnUpdateHandler(final OnUpdateHandler handler) {
 		whenReady(new WhenReady<ICustomGoogleMap>() {
 			@Override
 			public void invoke(ICustomGoogleMap object) {
-				object.setOnUpdateEventHandler(handler);
+				object.setOnUpdateHandler(handler);
 			}
 		});
 	}
@@ -176,7 +174,7 @@ public class CustomGoogleMap extends WhenReadyWrapper<ICustomGoogleMap> implemen
 	}
 
 	@Override
-	public void invalidate(final int animationTime, final OnInvalidationAnimationFinished invalidationAnimationFinished) {
+	public void invalidate(final int animationTime, final OnInvalidationAnimationFinishedCallback invalidationAnimationFinished) {
 		whenReady(new WhenReady<ICustomGoogleMap>() {
 			@Override
 			public void invoke(ICustomGoogleMap object) {
@@ -241,6 +239,16 @@ public class CustomGoogleMap extends WhenReadyWrapper<ICustomGoogleMap> implemen
 			@Override
 			public void invoke(ICustomGoogleMap object) {
 				object.setPadding(left, top, right, bottom);
+			}
+		});
+	}
+
+	@Override
+	public void setOnMapLongClick(final OnMapLongClick handler) {
+		whenReady(new WhenReady<ICustomGoogleMap>() {
+			@Override
+			public void invoke(ICustomGoogleMap object) {
+				object.setOnMapLongClick(handler);
 			}
 		});
 	}

@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.GoogleMap.CancelableCallback;
@@ -90,12 +91,12 @@ public class InternalCustomGoogleMap implements ICustomGoogleMap {
 	}
 
 	@Override
-	public void setOnTouchEventHandler(OnTouchEventHandler handler) {
-		eventsListener.setOnTouchEventHandler(handler);
+	public void setOnTouchListener(OnTouchListener listener) {
+		eventsListener.setOnTouchListener(listener);
 	}
 
 	@Override
-	public void setOnUpdateEventHandler(final OnUpdate handler) {
+	public void setOnUpdateHandler(final OnUpdateHandler handler) {
 		googleMap.setOnCameraChangeListener(new OnCameraChangeListener() {
 			@Override
 			public void onCameraChange(CameraPosition arg0) {
@@ -151,10 +152,10 @@ public class InternalCustomGoogleMap implements ICustomGoogleMap {
 	}
 
 	@Override
-	public void invalidate(int animationTime, final OnInvalidationAnimationFinished invalidationAnimationFinished) {
+	public void invalidate(int animationTime, final OnInvalidationAnimationFinishedCallback callback) {
 		if (CameraPositionUtil.equals(cameraPosition, googleMap.getCameraPosition())) {
-			if (invalidationAnimationFinished != null) {
-				invalidationAnimationFinished.invoke();
+			if (callback != null) {
+				callback.invoke();
 			}
 		} else {
 			isAnimating = true;
@@ -165,8 +166,8 @@ public class InternalCustomGoogleMap implements ICustomGoogleMap {
 						
 						@Override
 						public void onFinish() {
-							if (invalidationAnimationFinished != null) {
-								invalidationAnimationFinished.invoke();
+							if (callback != null) {
+								callback.invoke();
 							}
 							isAnimating = false;
 						}
@@ -233,5 +234,15 @@ public class InternalCustomGoogleMap implements ICustomGoogleMap {
 		paddingRight = right;
 		paddingBottom = bottom;
 		googleMap.setPadding(left, top, right, bottom);
+	}
+
+	@Override
+	public void setOnMapLongClick(final OnMapLongClick handler) {
+		googleMap.setOnMapLongClickListener(new OnMapLongClickListener() {
+			@Override
+			public void onMapLongClick(com.google.android.gms.maps.model.LatLng location) {
+				handler.invoke(location);
+			}
+		});
 	}
 }

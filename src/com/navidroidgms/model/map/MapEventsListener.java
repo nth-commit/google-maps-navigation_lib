@@ -1,6 +1,6 @@
 package com.navidroidgms.model.map;
 
-import com.navidroid.model.map.IMap.OnTouchEventHandler;
+import com.navidroid.model.map.IMap;
 
 import android.content.Context;
 import android.view.MotionEvent;
@@ -8,21 +8,21 @@ import android.view.View;
 
 public class MapEventsListener extends View {
 	
-	private OnTouchEventHandler handler;
-
+	private IMap.OnTouchListener onTouchListener;
+	
 	public MapEventsListener(Context context) {
 		super(context);
 	}
 	
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		if (handler != null) {
-			handler.invoke();
+		if (onTouchListener != null) {
+			onTouchListener.invoke();
 		}
 		return super.onTouchEvent(event);
 	}
 	
-	public void setOnTouchEventHandler(OnTouchEventHandler handler) {
-		this.handler = handler;
+	public void setOnTouchListener(IMap.OnTouchListener listener) {
+		onTouchListener = listener;
 	}
 }
